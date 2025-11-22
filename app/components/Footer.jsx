@@ -1,0 +1,123 @@
+import React from "react";
+//import { FaLinkedin } from "react-icons/fa";
+
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
+import Image from "next/image";
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-900 text-gray-300 py-12 px-6 md:px-16">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+        {/* Logo and About */}
+        <div>
+          <Image
+            src="/logo.png"
+            alt="Company Logo"
+            className="w-32 mb-4"
+            width={150}
+            height={60}
+            priority
+          />
+          <p className="text-sm leading-relaxed">
+            We provide innovative and reliable digital solutions to help your
+            business connect, grow, and succeed in the modern world.
+          </p>
+        </div>
+
+        {/* Quick Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
+          <ul className="space-y-2 text-sm">
+            <li>
+              <a href="#" className="hover:text-green-600 transition-colors">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-green-600 transition-colors">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-green-600 transition-colors">
+                Services
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-green-600 transition-colors">
+                Contact
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact Info */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Contact</h3>
+          <ul className="space-y-4 text-base">
+            {" "}
+            {/* increased spacing and font size */}
+            <li className="flex items-center gap-3">
+              <MapPin className="w-6 h-6 text-green-500 drop-shadow-md" />{" "}
+              {/* bigger + shadow */}
+              Dasht-e-Barchi, Kabul, Afghanistan
+            </li>
+            <li className="flex items-center gap-3">
+              <Phone className="w-6 h-6 text-green-600 drop-shadow-md" />
+              +93 787 484 323
+            </li>
+            <li className="flex items-center gap-3">
+              <Mail className="w-6 h-6 text-green-600 drop-shadow-md" />
+              nova.inc.cc@gmail.com
+            </li>
+          </ul>
+        </div>
+
+        {/* Social Links */}
+        <div>
+          <h3 className="text-lg font-semibold text-white mb-4">Follow Us</h3>
+          <div className="flex gap-4">
+            {/* Facebook */}
+            <a
+              href="#"
+              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-blue-600 hover:scale-110"
+            >
+              <Facebook className="w-6 h-6 text-white" />
+            </a>
+
+            {/* Twitter */}
+            <a
+              href="#"
+              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-sky-500 hover:scale-110"
+            >
+              <Twitter className="w-6 h-6 text-white" />
+            </a>
+
+            {/* Instagram */}
+            <a
+              href="#"
+              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-pink-500 hover:scale-110"
+            >
+              <Instagram className="w-6 h-6 text-white" />
+            </a>
+           
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright */}
+      <div className="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-500">
+        © {new Date().getFullYear()} NOVA INC. All rights reserved.
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
