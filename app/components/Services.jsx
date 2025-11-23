@@ -1,29 +1,29 @@
 import React from "react";
-import { Code, Globe, Server, Smartphone } from "lucide-react"; // Lucide icons
+import { FolderOpenDot, HatGlasses, BrickWall, TrafficCone } from "lucide-react"; // Lucide icons
 import { motion } from "framer-motion";
 
 const Services = () => {
   const services = [
     {
-      icon: <Globe className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <HatGlasses className="w-12 h-12 text-green-600 mb-4" />,
       title: "Structural Steel Fabrication & Erection",
       description:
         "Delivering durable and high-quality steel structures.",
     },
     {
-      icon: <Smartphone className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <TrafficCone className="w-12 h-12 text-green-600 mb-4" />,
       title: "Civil & Infrastructure Projects",
       description:
         "Roads, bridges, and essential community infrastructure.",
     },
     {
-      icon: <Server className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <BrickWall className="w-12 h-12 text-green-600 mb-4" />,
       title: "Residential & Commercial Construction",
       description:
         "Modern, funcutional, and sustainable spaces.",
     },
     {
-      icon: <Code className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <FolderOpenDot className="w-12 h-12 text-green-600 mb-4" />,
       title: "Project Management & Consultancy",
       description:
         "Ensuringprojects are completed on time, safely, and within budget.",
@@ -37,7 +37,7 @@ const Services = () => {
          initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-        className="text-3xl font-serif md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        className="text-3xl font-sans md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           What We Do!
         </motion.h2>
         <span className="block w-16 h-1 bg-green-600 mx-auto mt-3 rounded mb-4"></span>
@@ -45,7 +45,7 @@ const Services = () => {
         initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-        className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-serif">
+        className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-sans">
           At NOVA Inc. Construction, our organizational structure is designed to
           ensure efficiency, accountability, and high-quality project delivery.
           At the top, CEO/Managing Director provides strategic leadership,
@@ -66,7 +66,7 @@ const Services = () => {
                 <h3 className="text-xl font-sans font-semibold text-gray-900 dark:text-white mb-2">
                   {service.title}
                 </h3>
-                <p className="text-gray-600 font-serif dark:text-gray-300 text-sm">
+                <p className="text-gray-600 font-sans dark:text-gray-300 text-sm">
                   {service.description}
                 </p>
               </div>

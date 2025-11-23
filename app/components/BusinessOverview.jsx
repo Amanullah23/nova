@@ -40,7 +40,7 @@ const BusinessOverview = () => {
             initial={{ opacity: 0, y: -30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-3xl sm:text-4xl font-serif font-bold tracking-wide uppercase relative inline-block"
+            className="text-3xl sm:text-4xl font-sans font-bold tracking-wide relative inline-block"
           >
             Business Overview
             <span className="block w-16 h-1 bg-green-600 mx-auto mt-3 rounded"></span>
@@ -49,9 +49,13 @@ const BusinessOverview = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="mt-5"
+            className="mt-5 font-sans text-lg w-[80%] items-center mx-auto justify-center"
           >
-            Some text here!
+            A brief overview of the entire plan, highlighting
+            key objectives and strategies. 
+            Company Description: Details the
+            nature of the business, its mission, and what services will be
+            offered.
           </motion.p>
         </div>
 
@@ -63,13 +67,13 @@ const BusinessOverview = () => {
               className="group bg-gray-50 dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-500"
             >
               {/* Image */}
-              <div className="overflow-hidden">
+              <div className="overflow-hidden p-8">
                 <Image
                   src={item.image}
                   alt={item.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
+                  width={310}
+                  height={80}
+                  className="object-cover group-hover:scale-110 transition-transform duration-500 rounded-lg"
                 />
               </div>
 
@@ -77,11 +81,11 @@ const BusinessOverview = () => {
               <div className="p-6 text-left">
                 <div className="flex items-center gap-3 mb-3">
                   {item.icon}
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-sans text-xl font-semibold text-gray-900 dark:text-white">
                     {item.title}
                   </h3>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-sans">
                   {item.description}
                 </p>
               </div>
