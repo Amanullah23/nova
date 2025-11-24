@@ -45,16 +45,16 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-10 py-1 flex justify-between items-center bg-gray-300">
         <Link href="/" className="flex items-center space-x-1">
           <Image
-            src="/logo-white.png"
+            src="/logo-02.png"
             alt="Logo"
             width={80}
             height={80}
-            className=""
+            className="ml-10"
             priority
           />
-          <span className="font-bold text-base text-black mt-1 dark:text-white whitespace-pre-line">
+          {/*<span className="font-bold text-base text-black mt-1 dark:text-white whitespace-pre-line">
             NOVA INC.<br/>CONSTRUCTION
-          </span>
+          </span>*/}
         </Link>
 
         <div className="hidden md:flex items-center space-x-8 text-black">

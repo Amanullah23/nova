@@ -27,7 +27,7 @@ const Footer = () => {
           />
           <p className="text-sm leading-relaxed">
             We provide innovative and reliable digital solutions to help your
-            business connect, grow, and succeed in the modern world.
+            business connect, grow, and succeed in the.
           </p>
         </div>
 
@@ -53,6 +53,11 @@ const Footer = () => {
             <li>
               <a href="#" className="hover:text-green-600 transition-colors">
                 Contact
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-green-600 transition-colors">
+                Projects
               </a>
             </li>
           </ul>
