@@ -10,7 +10,7 @@ const CompanyOrganization = () => {
         <h2 className="text-3xl font-sans md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Company Chart
         </h2>
-        <span className="block w-20 h-1 bg-green-600 mx-auto mt-3 mb-4 rounded"></span>
+        <span className="block w-20 h-1 bg-lime-500 mx-auto mt-3 mb-4 rounded"></span>
         <p className="mb-5 font-sans text-black text-lg px-10 max-w-4xl text-center mx-auto">
           At NOVA Inc. Construction, our organizational structure is designed to
           ensure efficiency, accountability, and high-quality project delivery.

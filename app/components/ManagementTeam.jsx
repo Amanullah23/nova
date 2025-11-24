@@ -7,22 +7,26 @@ const ManagementTeam =()=> {
     {
       name: "Eng. Ahmad Rahimi",
       role: "Chief Executive Officer",
-      image: "/team1.jpg",
+      image: "/team2.png",
+      bio: "Innovative leader with over a decade of experience in driving organizational growth and strategic development. Committed to building high-performing teams and delivering impactful business results.",
     },
     {
       name: "Fatima Sultani",
       role: "Operations Manager",
-      image: "/team2.jpg",
+      image: "/team4.png",
+      bio: "Skilled operations specialist focused on improving efficiency, workflow, and customer satisfaction. Passionate about optimizing processes and ensuring smooth daily operations.",
     },
     {
       name: "Mohammad Jawad",
       role: "Finance Director",
-      image: "/team3.jpg",
+      image: "/team2.png",
+      bio: "Experienced financial strategist with strong expertise in budgeting, auditing, and financial planning.Dedicated to ensuring financial stability and guiding sustainable business decisions.",
     },
     {
-      name: "Sara Noor",
+      name: "Sara Noori",
       role: "Project Manager",
-      image: "/team4.jpg",
+      image: "/team4.png",
+      bio: "Results-driven project manager known for delivering projects on time with high quality and coordination.Expert in team collaboration, planning, and ensuring project success from start to finish.",
     },
   ];
 
@@ -37,6 +41,7 @@ const ManagementTeam =()=> {
         >
           Our Management Team
         </motion.h2>
+        <span className="block w-16 h-1 bg-lime-500 mx-auto mt-3 rounded mb-4"></span>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -64,14 +69,19 @@ const ManagementTeam =()=> {
                   className="rounded-full object-cover"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+              <h3 className="text-lg font-semibold text-black dark:text-white">
                 {member.name}
               </h3>
-              <p className="text-green-600 dark:text-blue-400 text-sm">
+              <p className="text-lime-500 dark:text-blue-400 text-sm">
                 {member.role}
               </p>
+              <p className="text-sm text-gray-500 text-start mx-auto mt-2">
+              <span className="text-bold text-xl">Bio: </span>{member.bio}
+              </p>
             </motion.div>
+            
           ))}
+          
         </div>
       </div>
     </section>

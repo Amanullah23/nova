@@ -8,7 +8,7 @@ const BusinessOverview = () => {
     {
       id: 1,
       title: "Core Values",
-      icon: <ShieldCheck className="w-8 h-8 text-green-500" />,
+      icon: <ShieldCheck className="w-8 h-8 text-lime-500" />,
       description:
         "At Nova Inc. Construction, we value integrity, quality, and innovation, building trust through every project we deliver. We prioritize safety, teamwork, and sustainability, ensuring strong results today and a better future tomorrow.",
       image: "/2.png", // your image path here
@@ -16,7 +16,7 @@ const BusinessOverview = () => {
     {
       id: 2,
       title: "Partners",
-      icon: <Users2 className="w-8 h-8 text-green-500" />,
+      icon: <Users2 className="w-8 h-8 text-lime-500" />,
       description:
         "We collaborate with trusted partners, suppliers, subcontractors, and industry experts who share our values of quality, safety, and innovation, ensuring excellence and long-term value.",
       image: "/2.png", // your image path here src="/logo-white.png"
@@ -24,7 +24,7 @@ const BusinessOverview = () => {
     {
       id: 3,
       title: "Distribution Channel",
-      icon: <Truck className="w-8 h-8 text-green-500" />,
+      icon: <Truck className="w-8 h-8 text-lime-500" />,
       description:
         "Projects are delivered through direct supplier partnerships and efficient supply chain management, ensuring timely material flow and consistent quality for our clients.",
       image: "/1.jpeg", // your image path here

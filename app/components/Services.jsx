@@ -5,25 +5,25 @@ import { motion } from "framer-motion";
 const Services = () => {
   const services = [
     {
-      icon: <HatGlasses className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <HatGlasses className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Structural Steel Fabrication & Erection",
       description:
         "Delivering durable and high-quality steel structures.",
     },
     {
-      icon: <TrafficCone className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <TrafficCone className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Civil & Infrastructure Projects",
       description:
         "Roads, bridges, and essential community infrastructure.",
     },
     {
-      icon: <BrickWall className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <BrickWall className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Residential & Commercial Construction",
       description:
         "Modern, funcutional, and sustainable spaces.",
     },
     {
-      icon: <FolderOpenDot className="w-12 h-12 text-green-600 mb-4" />,
+      icon: <FolderOpenDot className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Project Management & Consultancy",
       description:
         "Ensuringprojects are completed on time, safely, and within budget.",
@@ -40,7 +40,7 @@ const Services = () => {
         className="text-3xl font-sans md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           What We Do!
         </motion.h2>
-        <span className="block w-16 h-1 bg-green-600 mx-auto mt-3 rounded mb-4"></span>
+        <span className="block w-16 h-1 bg-lime-500 mx-auto mt-3 rounded mb-4"></span>
         <motion.p 
         initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

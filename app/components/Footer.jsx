@@ -36,27 +36,27 @@ const Footer = () => {
           <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
+              <a href="#" className="hover:text-lime-500 transition-colors">
                 Home
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
+              <a href="#" className="hover:text-lime-500 transition-colors">
                 About Us
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
+              <a href="#" className="hover:text-lime-500 transition-colors">
                 Services
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
+              <a href="#" className="hover:text-lime-500 transition-colors">
                 Contact
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-green-600 transition-colors">
+              <a href="#" className="hover:text-lime-500 transition-colors">
                 Projects
               </a>
             </li>
@@ -70,16 +70,16 @@ const Footer = () => {
             {" "}
             {/* increased spacing and font size */}
             <li className="flex items-center gap-3">
-              <MapPin className="w-6 h-6 text-green-500 drop-shadow-md" />{" "}
+              <MapPin className="w-6 h-6 text-lime-500 drop-shadow-md" />{" "}
               {/* bigger + shadow */}
               Dasht-e-Barchi, Kabul, Afghanistan
             </li>
             <li className="flex items-center gap-3">
-              <Phone className="w-6 h-6 text-green-600 drop-shadow-md" />
+              <Phone className="w-6 h-6 text-lime-600 drop-shadow-md" />
               +93 787 484 323
             </li>
             <li className="flex items-center gap-3">
-              <Mail className="w-6 h-6 text-green-600 drop-shadow-md" />
+              <Mail className="w-6 h-6 text-lime-600 drop-shadow-md" />
               nova.inc.cc@gmail.com
             </li>
           </ul>
