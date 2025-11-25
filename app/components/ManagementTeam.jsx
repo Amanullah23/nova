@@ -37,7 +37,7 @@ const ManagementTeam =()=> {
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-sans font-extrabold text-black dark:text-white mb-4"
+          className="text-5xl font-bold"
         >
           Our Management Team
         </motion.h2>
@@ -46,7 +46,7 @@ const ManagementTeam =()=> {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="text-black font-sans text-lg dark:text-gray-300 max-w-xl mx-auto mb-12"
+          className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-sans"
         >
           Meet the experienced professionals leading our company toward growth
           and excellence in every construction project we deliver.
