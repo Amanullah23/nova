@@ -15,35 +15,35 @@ const OrgChart = () => {
           From operations manager and engineers to site supervisors and foremen.
         </p>
       {/* CEO */}
-      <div className="bg-green-500 text-white font-bold px-6 py-3 rounded-lg shadow-md text-center sm:text-sm md:text-lg lg:text-xl">
+      <div className="bg-lime-500 text-white font-bold px-6 py-3 rounded-lg shadow-md text-center sm:text-sm md:text-lg lg:text-xl">
         CEO/ Managing Director
       </div>
 
       {/* First level */}
       <div className="flex justify-center mt-6 space-x-2 sm:space-x-2 md:space-x-10">
         <div className="flex flex-col items-center">
-          <div className="bg-green-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
+          <div className="bg-lime-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
             <p className="sm:text-sm">1- Operation Department</p>
           </div>
-          <div className="mt-6 bg-green-500 text-white px-3 py-1 rounded shadow text-center">
+          <div className="mt-6 bg-lime-500 text-white px-3 py-1 rounded shadow text-center">
             Officer/ Executive
           </div>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="bg-green-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
+          <div className="bg-lime-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
             2- Finance Department
           </div>
-          <div className="mt-6 bg-green-500 text-white px-3 py-1 rounded shadow text-center">
+          <div className="mt-6 bg-lime-500 text-white px-3 py-1 rounded shadow text-center">
             Officer/ Accountant
           </div>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="bg-green-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
+          <div className="bg-lime-500 text-white font-bold px-4 py-2 rounded-lg shadow-md text-center">
             3- Eng Department 
           </div>
-          <div className="mt-6 bg-green-500 text-white px-3 py-1 rounded shadow text-center">
+          <div className="mt-6 bg-lime-500 text-white px-3 py-1 rounded shadow text-center">
             Officer/ Executive
           </div>
         </div>
