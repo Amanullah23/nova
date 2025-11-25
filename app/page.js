@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Services from "./components/Services";
 import Chart from "./components/Chart";
+import OrgChart from "./components/OrgChart";
 import BusinessOverview from "./components/BusinessOverview";
 import ManagementTeam from "./components/ManagementTeam";
 import Contact from "./components/Contact";
@@ -34,6 +35,7 @@ export default function Home() {
       <Header />
       <Services />
       <Chart />
+      
       <BusinessOverview />
       <ManagementTeam />
       <Contact />

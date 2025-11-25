@@ -1,5 +1,10 @@
 import React from "react";
-import { FolderOpenDot, HatGlasses, BrickWall, TrafficCone } from "lucide-react"; // Lucide icons
+import {
+  FolderOpenDot,
+  HatGlasses,
+  BrickWall,
+  TrafficCone,
+} from "lucide-react"; // Lucide icons
 import { motion } from "framer-motion";
 
 const Services = () => {
@@ -7,20 +12,17 @@ const Services = () => {
     {
       icon: <HatGlasses className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Structural Steel Fabrication & Erection",
-      description:
-        "Delivering durable and high-quality steel structures.",
+      description: "Delivering durable and high-quality steel structures.",
     },
     {
       icon: <TrafficCone className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Civil & Infrastructure Projects",
-      description:
-        "Roads, bridges, and essential community infrastructure.",
+      description: "Roads, bridges, and essential community infrastructure.",
     },
     {
       icon: <BrickWall className="w-12 h-12 text-lime-500 mb-4" />,
       title: "Residential & Commercial Construction",
-      description:
-        "Modern, funcutional, and sustainable spaces.",
+      description: "Modern, funcutional, and sustainable spaces.",
     },
     {
       icon: <FolderOpenDot className="w-12 h-12 text-lime-500 mb-4" />,
@@ -31,21 +33,26 @@ const Services = () => {
   ];
 
   return (
-    <section className="w-full py-25 px-6 md:px-12 bg-gray-50 dark:bg-gray-900" id="services">
+    <section
+      className="w-full py-25 px-6 md:px-12 bg-gray-50 dark:bg-gray-900"
+      id="services"
+    >
       <div className="max-w-6xl mx-auto text-center">
-        <motion.h2 
-         initial={{ opacity: 0, y: -30 }}
+        <motion.h2
+          initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-        className="text-5xl font-bold">
+          className="text-5xl font-bold"
+        >
           What We Do!
         </motion.h2>
         <span className="block w-16 h-1 bg-lime-500 mx-auto mt-3 rounded mb-4"></span>
-        <motion.p 
-        initial={{ opacity: 0, y: 20 }}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-        className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-sans">
+          className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-sans"
+        >
           At NOVA Inc. Construction, our organizational structure is designed to
           ensure efficiency, accountability, and high-quality project delivery.
           At the top, CEO/Managing Director provides strategic leadership,
@@ -57,8 +64,8 @@ const Services = () => {
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 1 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 1 }}
               className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
             >
               <div className="flex flex-col items-center text-center">
