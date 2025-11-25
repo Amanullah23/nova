@@ -12,15 +12,15 @@ export default function ContactSection() {
           <div>
             <h1 className="text-5xl font-bold">Contacts</h1>
             <p className="text-lime-500 text-xl font-bold mt-5">Head Office</p>
-            <p className="text-gray-600">Dasht-e Barchi, Kabul - Afghanistan</p>
+            <p className="text-gray-600 dark:text-white">Dasht-e Barchi, Kabul - Afghanistan</p>
           </div>
           <div>
             <p className="text-lime-500 text-xl font-bold mt-5">Phone</p>
-            <p className="text-gray-600">+9374 944 2276</p>
+            <p className="text-gray-600 dark:text-white">+9374 944 2276</p>
           </div>
           <div>
             <p className="text-lime-500 text-xl font-bold mt-5">Email</p>
-            <p className="text-gray-600">nova.inc.cc@gmail.com</p>
+            <p className="text-gray-600 dark:text-white">nova.inc.cc@gmail.com</p>
           </div>
           <div className="">
             <Map/>

@@ -38,11 +38,11 @@ const Navbar = () => {
     <nav
       className={`fixed w-full top-0  z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-blue-600/90 dark:bg-blue-800/90 backdrop-blur-md shadow-md"
+          ? "bg-blue-600/90 dark:bg-black backdrop-blur-md shadow-md"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-10 py-1 flex justify-between items-center bg-gray-300">
+      <div className="max-w-7xl mx-auto px-10 py-1 flex justify-between items-center bg-gray-300 dark:bg-black">
         <Link href="/" className="flex items-center space-x-1">
           <Image
             src="/logo-02.png"

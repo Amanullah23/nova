@@ -72,11 +72,11 @@ const ManagementTeam =()=> {
               <h3 className="text-lg font-semibold text-black dark:text-white">
                 {member.name}
               </h3>
-              <p className="text-lime-500 dark:text-blue-400 text-sm">
+              <p className="text-lime-500 dark:text-lime-500 text-sm">
                 {member.role}
               </p>
-              <p className="text-sm text-gray-500 text-start mx-auto mt-2">
-              <span className="text-bold text-xl">Bio: </span>{member.bio}
+              <p className="text-sm text-gray-500 text-start mx-auto mt-2 dark:text-white">
+              <span className="text-bold text-xl ">Bio: </span>{member.bio}
               </p>
             </motion.div>
             
