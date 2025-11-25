@@ -31,7 +31,7 @@ const Services = () => {
   ];
 
   return (
-    <section className="w-full py-16 px-6 md:px-12 bg-gray-50 dark:bg-gray-900">
+    <section className="w-full py-25 px-6 md:px-12 bg-gray-50 dark:bg-gray-900" id="services">
       <div className="max-w-6xl mx-auto text-center">
         <motion.h2 
          initial={{ opacity: 0, y: -30 }}

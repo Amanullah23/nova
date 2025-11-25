@@ -13,37 +13,43 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // client mounted
     setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Determine the actual current theme in a way that works across versions
   const currentTheme = (() => {
     if (typeof resolvedTheme !== "undefined") return resolvedTheme;
     if (theme === "system") return systemTheme || "light";
     return theme || "light";
   })();
 
-  // Toggle helper — toggles between 'dark' and 'light'
   const toggleTheme = () => {
-    // If theme is system, treat resolvedTheme as source of truth
     const active = currentTheme === "dark" ? "dark" : "light";
     setTheme(active === "dark" ? "light" : "dark");
   };
 
+  // Map nav items to their section IDs
+  const navItems = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "#services" },
+    { name: "Projects", href: "projects" },
+    { name: "Pricing", href: "#pricing" },
+    { name: "About", href: "#about" },
+    { name: "Contact", href: "#contact" },
+  ];
+
   return (
     <nav
-      className={`fixed w-full top-0  z-50 transition-all duration-300 ${
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-blue-600/90 dark:bg-black backdrop-blur-md shadow-md"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-10 py-1 flex justify-between items-center bg-gray-300 dark:bg-black">
-        <Link href="/" className="flex items-center space-x-1">
+      <div className="max-w-7xl mx-auto px-10 py-1 flex justify-between items-center bg-gray-300 dark:bg-black transition-colors">
+        <Link href="#home" className="flex items-center space-x-1">
           <Image
             src="/logo-02.png"
             alt="Logo"
@@ -52,35 +58,37 @@ const Navbar = () => {
             className="ml-10"
             priority
           />
-          {/*<span className="font-bold text-base text-black mt-1 dark:text-white whitespace-pre-line">
-            NOVA INC.<br/>CONSTRUCTION
-          </span>*/}
         </Link>
 
-        <div className="hidden md:flex items-center space-x-8 text-black">
-          {["Home", "Services", "Projects", "Pricing", "About", "Contact",].map((item) => (
-            <Link
-              key={item}
-              href={`/${item.toLowerCase()}`}
-              className="text-black font-sans font-semibold dark:text-gray-300 hover:text-green-600 dark:hover:text-blue-400 transition"
+        <div className="hidden md:flex items-center space-x-8 text-black dark:text-gray-300">
+          {navItems.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              className="text-gray-800 dark:text-gray-200 hover:text-green-600 dark:hover:text-blue-400 transition"
             >
-              {item}
-            </Link>
+              {item.name}
+            </a>
           ))}
 
-          {/* Theme toggle: render only after mount */}
-          {mounted ? (
+          {mounted && (
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             >
-              {currentTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              {currentTheme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
             </button>
-          ) : (
-            <div style={{ width: 36, height: 36 }} aria-hidden />
           )}
+
+          <a
+            href="#contact"
+            className="bg-lime-500 px-5 py-2 rounded-2xl cursor-pointer hover:bg-lime-600 hover:text-black"
+          >
+            Get Started
+          </a>
         </div>
 
+        {/* Mobile Menu */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-gray-800 dark:text-gray-200"
@@ -92,35 +100,37 @@ const Navbar = () => {
       {menuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 shadow-lg">
           <div className="flex flex-col items-center space-y-4 py-5">
-            {["Home", "Services", "Pricing", "About", "Contact"].map((item) => (
-              <Link
-                key={item}
-                href={`/${item.toLowerCase()}`}
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
                 className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition"
                 onClick={() => setMenuOpen(false)}
               >
-                {item}
-              </Link>
+                {item.name}
+              </a>
             ))}
 
-            {mounted ? (
+            {mounted && (
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
               >
-                {currentTheme === "dark" ? (
-                  <Sun size={18} />
-                ) : (
-                  <Moon size={18} />
-                )}
+                {currentTheme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
               </button>
-            ) : (
-              <div style={{ width: 36, height: 36 }} aria-hidden />
             )}
+
+            <a
+              href="#contact"
+              className="bg-lime-500 px-5 py-2 rounded-2xl cursor-pointer hover:bg-lime-600 hover:text-black"
+            >
+              Get Started
+            </a>
           </div>
         </div>
       )}
     </nav>
   );
-}
+};
+
 export default Navbar;

@@ -5,7 +5,8 @@ import Map from "./Map";
 
 export default function ContactSection() {
   return (
-    <div className="w-full py-16 px-6 md:px-12 lg:px-20 mb-7">
+    <div id="contact">
+    <div className="w-full py-25 px-6 md:px-12 lg:px-20 mb-7">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* LEFT SIDE IMAGE */}
         <div className="w-full">
@@ -78,6 +79,7 @@ export default function ContactSection() {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 }
