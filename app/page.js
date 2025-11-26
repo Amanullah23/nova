@@ -12,6 +12,7 @@ import Contact from "./components/Contact";
 import { useEffect } from "react";
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import Project from "./components/Project";
 
 export default function Home() {
   
@@ -34,8 +35,8 @@ export default function Home() {
       <Navbar />
       <Header />
       <Services />
+      <Project />
       <Chart />
-      
       <BusinessOverview />
       <ManagementTeam />
       <Contact />

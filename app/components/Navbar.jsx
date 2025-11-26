@@ -33,11 +33,11 @@ const Navbar = () => {
   // Map nav items to their section IDs
   const navItems = [
     { name: "Home", href: "/" },
-    { name: "Services", href: "#services" },
-    { name: "Projects", href: "projects" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" },
+    { name: "Services", href: "/#services" },
+    { name: "Projects", href: "/#projects" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "About", href: "/#about" },
+    { name: "Contact", href: "/#contact" },
   ];
 
   return (
@@ -81,7 +81,7 @@ const Navbar = () => {
           )}
 
           <a
-            href="#contact"
+            href="/#contact"
             className="bg-lime-500 px-5 py-2 rounded-2xl cursor-pointer hover:bg-lime-600 hover:text-black"
           >
             Get Started
