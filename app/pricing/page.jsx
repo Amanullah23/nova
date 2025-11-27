@@ -1,15 +1,13 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import Image from 'next/image'
+import Image from "next/image";
 
 export default function PricingPage() {
   return (
     <main>
       <Navbar />
-
       <section className="w-full py-35 px-6 md:px-20 bg-gray-100">
         <h2 className="text-4xl font-bold text-center mb-10 ">Pricing Plans</h2>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {/* Plan 1 */}
           <div className="bg-white shadow-lg rounded-xl p-8 text-center hover:scale-105 transition">
@@ -60,8 +58,8 @@ export default function PricingPage() {
             </button>
           </div>
         </div>
-        <div className="flec grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto mt-20 items-center">
-          <div className="">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto mt-20 items-center">
+          <div >
             <Image
               src="/b.png"
               alt="Pricing Illustration"
@@ -69,15 +67,15 @@ export default function PricingPage() {
               height={500}
             />
           </div>
-          <div className="">
+          <div>
             <h1 className="text-4xl font-bold">Need a larger plan?</h1>
             <p className="text-md text-gray-500 py-2">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Consequat
               tristique eget amet, tempus eu at consecttur.
             </p>
             <button className="bg-lime-500 cursor-pointer rounded-full px-5 py-3 hover:bg-lime-800 hover:text-white">
-                <a href="/#contact">Contact Us</a>
-                </button>
+              <a href="/#contact">Contact Us</a>
+            </button>
           </div>
         </div>
       </section>

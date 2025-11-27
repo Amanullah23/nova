@@ -39,7 +39,7 @@ const ManagementTeam =()=> {
           transition={{ duration: 0.6 }}
           className="text-5xl font-bold"
         >
-          Our Management Team
+          Management Team
         </motion.h2>
         <span className="block w-16 h-1 bg-lime-500 mx-auto mt-3 rounded mb-4"></span>
         <motion.p

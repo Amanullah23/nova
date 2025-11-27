@@ -1,5 +1,10 @@
 import React from "react";
 //import { FaLinkedin } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaFacebook } from "react-icons/fa";
+
 
 import {
   Facebook,
@@ -7,7 +12,7 @@ import {
   Instagram,
   Mail,
   MapPin,
-  Phone,
+  Phone, Linkedin,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -76,7 +81,7 @@ const Footer = () => {
             </li>
             <li className="flex items-center gap-3">
               <Phone className="w-6 h-6 text-lime-600 drop-shadow-md" />
-              +93 787 484 323
+              +93 74 944 2276
             </li>
             <li className="flex items-center gap-3">
               <Mail className="w-6 h-6 text-lime-600 drop-shadow-md" />
@@ -91,26 +96,32 @@ const Footer = () => {
           <div className="flex gap-4">
             {/* Facebook */}
             <a
-              href="#"
+              href="www.facebook.com/nova.inc.construction"
               className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-blue-600 hover:scale-110"
             >
-              <Facebook className="w-6 h-6 text-white" />
+              <FaFacebook className="w-6 h-6 text-white" />
             </a>
 
-            {/* Twitter */}
+            {/* XTwitter */}
             <a
-              href="#"
-              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-sky-500 hover:scale-110"
+              href="www.twitter.com/NovaIncCC"
+              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-gray-600 hover:scale-110"
             >
-              <Twitter className="w-6 h-6 text-white" />
+              <FaXTwitter className="w-6 h-6" />
             </a>
 
             {/* Instagram */}
             <a
-              href="#"
+              href="https://www.instagram.com/nova.inc.construction?igsh=djBqa3N3czRoNHlt" target="blank"
               className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-pink-500 hover:scale-110"
             >
-              <Instagram className="w-6 h-6 text-white" />
+              <FaInstagram className="w-6 h-6 text-white" />
+            </a>
+             <a
+              href="https://www.linkedin.com/company/nova-inc-construction/" target="blank"
+              className="p-3 bg-white/10 rounded-full transition-all duration-300 hover:bg-blue-500 hover:scale-110"
+            >
+              <FaLinkedin className="w-6 h-6 text-white" />
             </a>
            
           </div>

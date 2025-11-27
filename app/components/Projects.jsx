@@ -6,28 +6,28 @@ const projectsData = [
     id: 1,
     title: "Residential Complex - Kabul",
     location: "Kabul, Afghanistan",
-    image: "/projects/residential.jpg",
+    image: "/p4.jpeg",
     description: "A modern residential complex with 200+ apartments, featuring sustainable design and smart infrastructure.",
   },
   {
     id: 2,
     title: "Commercial Office Tower",
     location: "Herat, Afghanistan",
-    image: "/projects/office.jpg",
+    image: "/p1.jpg",
     description: "High-rise office building with advanced facilities, designed for corporate and tech companies.",
   },
   {
     id: 3,
     title: "Industrial Factory",
     location: "Mazar-i-Sharif, Afghanistan",
-    image: "/projects/factory.jpg",
+    image: "/p3.jpg",
     description: "State-of-the-art industrial factory with modern machinery and eco-friendly systems.",
   },
   {
     id: 4,
     title: "Educational Campus",
     location: "Kandahar, Afghanistan",
-    image: "/projects/campus.jpg",
+    image: "/p5.jpg",
     description: "A fully equipped educational campus including classrooms, laboratories, and sports facilities.",
   },
 ];
@@ -50,7 +50,7 @@ export default function Projects() {
               alt={project.title}
               className="w-full h-64 object-cover rounded-lg shadow-md group-hover:scale-105 transition-transform duration-300"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white font-semibold text-lg">
+            <div className="absolute inset-0 bg-lime-900 bg-opacity-30 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white font-semibold text-lg">
               View Details
             </div>
           </div>

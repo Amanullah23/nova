@@ -16,14 +16,14 @@ const Project = () => {
                 transition={{ duration: 0.6 }}
                 className="text-5xl font-bold"
               >
-                Our Project!
+                Our Projects
               </motion.h2>
               <span className="block w-16 h-1 bg-lime-500 mx-auto mt-3 rounded mb-4"></span>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6 }}
-                className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-12 font-sans"
+                className="text-gray-600 text-lg max-w-3xl mx-auto text-center dark:text-gray-300 mb-2 font-sans"
               >
                 NOVA INC Construction Company has established itself as a leading force in Afghanistan’s construction and infrastructure sector, delivering landmark projects with exceptional quality and engineering excellence. Over the years, the company has successfully completed major residential, commercial, and industrial developments that demonstrate its commitment to innovation, durability, and modern design.
               </motion.p>

@@ -13,7 +13,7 @@ const Header = () => {
             initial={{ opacity: 0, y: -30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-mono font-bold text-gray-900 dark:text-white mb-4"
+            className="text-4xl md:text-5xl font-sans font-bold text-gray-900 dark:text-white mb-4"
           >
             <span className="text-lime-500 font-sans">NOVA INC</span> - Where
             Innovation Meets Trust.
