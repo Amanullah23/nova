@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Image from 'next/image'
 
 export default function PricingPage() {
   return (
@@ -60,7 +61,14 @@ export default function PricingPage() {
           </div>
         </div>
         <div className="flec grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto mt-20 items-center">
-          <div className="">image</div>
+          <div className="">
+            <Image
+              src="/b.png"
+              alt="Pricing Illustration"
+              width={500}
+              height={500}
+            />
+          </div>
           <div className="">
             <h1 className="text-4xl font-bold">Need a larger plan?</h1>
             <p className="text-md text-gray-500 py-2">
