@@ -15,7 +15,7 @@ const plans = [
     tag: null,
     description: "For small projects and startups getting started.",
     features: [
-      "10GB Storage",
+      "2 Years Warranty",
       "Standard Support",
       "5 Projects",
       "Basic Reporting",
@@ -32,7 +32,7 @@ const plans = [
     tag: "Most Popular",
     description: "Best for growing companies with active projects.",
     features: [
-      "50GB Storage",
+      "2 Years Warranty",
       "Priority Support",
       "20 Projects",
       "Advanced Reporting",
@@ -49,7 +49,7 @@ const plans = [
     tag: null,
     description: "For enterprise and large-scale construction projects.",
     features: [
-      "200GB Storage",
+      "2 Years Warranty",
       "24/7 Dedicated Support",
       "Unlimited Projects",
       "Full Analytics Suite",
