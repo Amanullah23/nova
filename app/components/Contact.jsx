@@ -1,9 +1,54 @@
 "use client";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, ArrowUpRight, Send } from "lucide-react";
 import Map from "./Map";
 
 export default function ContactSection() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "16f48704-1666-461c-a194-5d43af9a8652",
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+          subject: "New Contact Form Submission — NOVA INC.",
+          from_name: "NOVA INC. Website",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStatus("success");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <section
       id="contact"
@@ -76,23 +121,10 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col gap-6"
           >
-            {/* Contact Info Cards */}
             {[
-              {
-                icon: MapPin,
-                label: "Head Office",
-                value: "Dasht-e Barchi, Kabul — Afghanistan",
-              },
-              {
-                icon: Phone,
-                label: "Phone",
-                value: "+93 74 944 2276",
-              },
-              {
-                icon: Mail,
-                label: "Email",
-                value: "nova.inc.cc@gmail.com",
-              },
+              { icon: MapPin, label: "Head Office", value: "Dasht-e Barchi, Kabul — Afghanistan" },
+              { icon: Phone, label: "Phone", value: "+93 74 944 2276" },
+              { icon: Mail, label: "Email", value: "nova.inc.cc@gmail.com" },
             ].map((item, i) => {
               const Icon = item.icon;
               return (
@@ -104,9 +136,7 @@ export default function ContactSection() {
                   transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
                   className="group flex items-center gap-5 bg-white border border-[#e8e0d0] rounded-2xl px-6 py-5 hover:-translate-y-1 transition-transform duration-300 overflow-hidden relative"
                 >
-                  {/* Amber top line */}
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#d4a348] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-
                   <div className="w-12 h-12 rounded-2xl bg-[#f5f0e8] border border-[#e8e0d0] flex items-center justify-center shrink-0 group-hover:bg-[#d4a348]/10 group-hover:border-[#d4a348]/30 transition-colors duration-300">
                     <Icon className="w-5 h-5 text-[#d4a348]" />
                   </div>
@@ -161,7 +191,28 @@ export default function ContactSection() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-4">
+              {/* Success message */}
+              {status === "success" && (
+                <div className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                  <div className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                  <p className="text-green-700 text-[13px] font-semibold">
+                    Message sent! We'll get back to you within 24 hours.
+                  </p>
+                </div>
+              )}
+
+              {/* Error message */}
+              {status === "error" && (
+                <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <p className="text-red-700 text-[13px] font-semibold">
+                    Something went wrong. Please try again or email us directly.
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
                 {/* Name */}
                 <div className="flex flex-col gap-1">
                   <label className="text-[11px] font-bold text-[#8a7a60] tracking-[0.15em] uppercase">
@@ -169,6 +220,10 @@ export default function ContactSection() {
                   </label>
                   <input
                     type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Eng. Ahmad Rahimi"
                     className="w-full px-4 py-3 bg-[#f5f0e8] border border-[#e8e0d0] rounded-xl text-[#0a0a0a] text-[14px] placeholder-[#b0a080] focus:outline-none focus:border-[#d4a348] focus:bg-white transition-all duration-200"
                   />
@@ -181,6 +236,10 @@ export default function ContactSection() {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="example@nova.inc"
                     className="w-full px-4 py-3 bg-[#f5f0e8] border border-[#e8e0d0] rounded-xl text-[#0a0a0a] text-[14px] placeholder-[#b0a080] focus:outline-none focus:border-[#d4a348] focus:bg-white transition-all duration-200"
                   />
@@ -193,6 +252,9 @@ export default function ContactSection() {
                   </label>
                   <input
                     type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="+93 70 000 0000"
                     className="w-full px-4 py-3 bg-[#f5f0e8] border border-[#e8e0d0] rounded-xl text-[#0a0a0a] text-[14px] placeholder-[#b0a080] focus:outline-none focus:border-[#d4a348] focus:bg-white transition-all duration-200"
                   />
@@ -204,7 +266,11 @@ export default function ContactSection() {
                     Your Message
                   </label>
                   <textarea
+                    name="message"
+                    required
                     rows={4}
+                    value={formData.message}
+                    onChange={handleChange}
                     placeholder="Tell us about your project..."
                     className="w-full px-4 py-3 bg-[#f5f0e8] border border-[#e8e0d0] rounded-xl text-[#0a0a0a] text-[14px] placeholder-[#b0a080] focus:outline-none focus:border-[#d4a348] focus:bg-white transition-all duration-200 resize-none"
                   />
@@ -213,12 +279,26 @@ export default function ContactSection() {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 w-full py-[14px] bg-[#0a0a0a] hover:bg-[#d4a348] text-white hover:text-[#0a0a0a] font-black text-[14px] tracking-wide rounded-xl transition-all duration-300 hover:shadow-[0_0_28px_rgba(212,163,72,0.3)] group"
+                  disabled={status === "loading"}
+                  className="flex items-center justify-center gap-2 w-full py-[14px] bg-[#0a0a0a] hover:bg-[#d4a348] text-white hover:text-[#0a0a0a] font-black text-[14px] tracking-wide rounded-xl transition-all duration-300 hover:shadow-[0_0_28px_rgba(212,163,72,0.3)] disabled:opacity-60 disabled:cursor-not-allowed group"
                 >
-                  Send Message
-                  <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                  {status === "loading" ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                    </>
+                  )}
                 </button>
-              </div>
+
+              </form>
             </div>
           </motion.div>
 
