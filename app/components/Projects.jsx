@@ -38,7 +38,7 @@ const projectsData = [
     id: 4,
     title: "Educational Campus",
     location: "Kandahar, Afghanistan",
-    image: "/p5.jpeg",
+    image: "/p5.jpg",
     category: "Education",
     year: "2023",
     description:

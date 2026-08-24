@@ -87,14 +87,14 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <Image
-              src="/logo-02.png"
+              src="/logo-new.png"
               alt="NOVA INC."
-              width={44}
-              height={44}
+              width={60}
+              height={60}
               priority
-              className="object-contain w-9 h-9 lg:w-11 lg:h-11"
+              className="object-contain w-[60px] h-[60px] lg:w-[72px] lg:h-11 shrink-0"
             />
-            <div className="hidden xs:block">
+            <div className="hidden min-[380px]:block">
               <p className="font-display text-ink font-bold text-[14px] lg:text-[15px] tracking-[0.1em] leading-none uppercase">
                 Nova Inc.
               </p>
