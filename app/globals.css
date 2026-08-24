@@ -1,19 +1,43 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
-/* Light mode default */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-ink: #111111;
+  --color-ink-soft: #1a1a1a;
+  --color-paper: #f7f7f5;
+  --color-surface: #eef2ea;
+  --color-brand: #7ec742;
+  --color-brand-dark: #5fa22e;
+  --color-brand-deep: #2f5c1c;
+  --color-brand-soft: #eaf7de;
+  --color-steel: #555555;
+  --color-steel-light: #d9d9d6;
+
+  --font-display: "Archivo Expanded", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
-/* Apply dark mode when <html class="dark"> */
-html.dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--color-brand);
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

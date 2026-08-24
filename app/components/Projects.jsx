@@ -38,7 +38,7 @@ const projectsData = [
     id: 4,
     title: "Educational Campus",
     location: "Kandahar, Afghanistan",
-    image: "/p5.jpg",
+    image: "/p5.jpeg",
     category: "Education",
     year: "2023",
     description:
@@ -50,75 +50,136 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   return (
-    <div className="max-w-7xl mx-auto mt-16 px-0">
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:grid-rows-2 lg:auto-rows-[260px] gap-6">
+        {projectsData.map((project, index) => {
+          const isFeature = index === 0;
+          const isWide = index === 3;
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {projectsData.map((project, index) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-            onClick={() => setSelectedProject(project)}
-            className="group relative rounded-3xl overflow-hidden cursor-pointer bg-[#0a0a0a]"
-          >
-            {/* Image */}
-            <div className="overflow-hidden h-[280px] md:h-[320px]">
-              <motion.img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover"
-                whileHover={{ scale: 1.06 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              />
-            </div>
-
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent" />
-
-            {/* Category pill — top left */}
-            <div className="absolute top-5 left-5">
-              <span className="px-3 py-[5px] bg-[#d4a348] text-[#0a0a0a] text-[10px] font-black tracking-widest uppercase rounded-full">
-                {project.category}
-              </span>
-            </div>
-
-            {/* Year — top right */}
-            <div className="absolute top-5 right-5">
-              <span className="px-3 py-[5px] bg-[#0a0a0a]/60 backdrop-blur-sm text-zinc-300 text-[11px] font-semibold tracking-widest rounded-full border border-white/10">
-                {project.year}
-              </span>
-            </div>
-
-            {/* Bottom content */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-white font-black text-xl tracking-tight leading-snug">
-                  {project.title}
-                </h3>
-                <div className="flex items-center gap-1 text-zinc-400 text-[12px]">
-                  <MapPin className="w-3 h-3 text-[#d4a348]" />
-                  {project.location}
+          if (isWide) {
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                onClick={() => setSelectedProject(project)}
+                className="lg:col-span-3 group relative rounded-3xl overflow-hidden cursor-pointer bg-white border border-steel-light shadow-sm flex flex-col sm:flex-row"
+              >
+                <div className="relative w-full sm:w-[38%] h-[220px] sm:h-full overflow-hidden shrink-0">
+                  <motion.img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                    whileHover={{ scale: 1.06 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-[5px] bg-brand text-ink font-mono text-[10px] font-bold tracking-widest uppercase rounded-full">
+                      {project.category}
+                    </span>
+                  </div>
                 </div>
+
+                <div className="flex-1 p-7 flex flex-col justify-center gap-3">
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="font-display text-ink font-bold text-xl md:text-2xl tracking-tight leading-snug">
+                      {project.title}
+                    </h3>
+                    <span className="shrink-0 font-mono text-steel text-[11px] px-3 py-1 rounded-full border border-steel-light">
+                      {project.year}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-steel text-[12px]">
+                    <MapPin className="w-3 h-3 text-brand-dark" />
+                    {project.location}
+                  </div>
+                  <p className="text-steel text-[13px] leading-relaxed max-w-xl">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div className="absolute bottom-6 right-6 hidden sm:flex">
+                  <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <ArrowUpRight className="w-4 h-4 text-ink" />
+                  </div>
+                </div>
+
+                <div className="absolute inset-0 rounded-3xl border-2 border-brand/0 group-hover:border-brand/40 transition-all duration-400 motion-reduce:transition-none pointer-events-none" />
+              </motion.div>
+            );
+          }
+
+          return (
+            <motion.div
+              key={project.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.12,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              onClick={() => setSelectedProject(project)}
+              className={`group relative rounded-3xl overflow-hidden cursor-pointer bg-white border border-steel-light shadow-sm ${isFeature ? "lg:col-span-2 lg:row-span-2" : ""}`}
+            >
+              <div className="overflow-hidden h-[280px] lg:h-full">
+                <motion.img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.06 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                />
               </div>
 
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                className="w-10 h-10 rounded-full bg-[#d4a348] flex items-center justify-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              >
-                <ArrowUpRight className="w-4 h-4 text-[#0a0a0a]" />
-              </motion.div>
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
 
-            {/* Hover border */}
-            <div className="absolute inset-0 rounded-3xl border-2 border-[#d4a348]/0 group-hover:border-[#d4a348]/40 transition-all duration-400 pointer-events-none" />
-          </motion.div>
-        ))}
+              <div className="absolute top-5 left-5">
+                <span className="px-3 py-[5px] bg-brand text-ink font-mono text-[10px] font-bold tracking-widest uppercase rounded-full">
+                  {project.category}
+                </span>
+              </div>
+
+              <div className="absolute top-5 right-5">
+                <span className="px-3 py-[5px] bg-ink/60 backdrop-blur-sm text-steel-light font-mono text-[11px] tracking-widest rounded-full border border-white/10">
+                  {project.year}
+                </span>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between">
+                <div className="flex flex-col gap-1">
+                  <h3
+                    className={`font-display text-white font-bold tracking-tight leading-snug ${isFeature ? "text-2xl" : "text-xl"}`}
+                  >
+                    {project.title}
+                  </h3>
+                  <div className="flex items-center gap-1 text-steel-light text-[12px]">
+                    <MapPin className="w-3 h-3 text-brand" />
+                    {project.location}
+                  </div>
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  className="w-10 h-10 rounded-full bg-brand flex items-center justify-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                >
+                  <ArrowUpRight className="w-4 h-4 text-ink" />
+                </motion.div>
+              </div>
+
+              <div className="absolute inset-0 rounded-3xl border-2 border-brand/0 group-hover:border-brand/40 transition-all duration-400 motion-reduce:transition-none pointer-events-none" />
+            </motion.div>
+          );
+        })}
       </div>
 
-      {/* Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -126,7 +187,7 @@ export default function Projects() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-[#0a0a0a]/85 backdrop-blur-md flex items-center justify-center z-50 px-4"
+            className="fixed inset-0 bg-ink/60 backdrop-blur-md flex items-center justify-center z-50 px-4"
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
@@ -135,54 +196,49 @@ export default function Projects() {
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-[#111111] border border-[#1e1e1e] rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl"
+              className="relative bg-white border border-steel-light rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl"
             >
-              {/* Amber top line */}
-              <div className="h-[3px] bg-gradient-to-r from-[#d4a348] via-[#d4a348]/60 to-transparent" />
+              <div className="h-[3px] bg-gradient-to-r from-brand via-brand/60 to-transparent" />
 
-              {/* Image */}
               <div className="relative h-[240px] overflow-hidden">
                 <img
                   src={selectedProject.image}
                   alt={selectedProject.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent" />
-
-                {/* Category on image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-[5px] bg-[#d4a348] text-[#0a0a0a] text-[10px] font-black tracking-widest uppercase rounded-full">
+                  <span className="px-3 py-[5px] bg-brand text-ink font-mono text-[10px] font-bold tracking-widest uppercase rounded-full">
                     {selectedProject.category}
                   </span>
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-7 flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-white font-black text-2xl tracking-tight leading-snug">
+                    <h3 className="font-display text-ink font-bold text-2xl tracking-tight leading-snug">
                       {selectedProject.title}
                     </h3>
-                    <div className="flex items-center gap-1 mt-1 text-zinc-400 text-[13px]">
-                      <MapPin className="w-3 h-3 text-[#d4a348]" />
+                    <div className="flex items-center gap-1 mt-1 text-steel text-[13px]">
+                      <MapPin className="w-3 h-3 text-brand-dark" />
                       {selectedProject.location}
                     </div>
                   </div>
-                  <span className="shrink-0 text-[#d4a348] text-[13px] font-bold border border-[#d4a348]/30 bg-[#d4a348]/10 px-3 py-1 rounded-full">
+                  <span className="shrink-0 text-brand-dark font-mono text-[13px] font-bold border border-brand/30 bg-brand/10 px-3 py-1 rounded-full">
                     {selectedProject.year}
                   </span>
                 </div>
 
-                <p className="text-zinc-400 text-[14px] leading-relaxed border-t border-[#1e1e1e] pt-4">
+                <p className="text-steel text-[14px] leading-relaxed border-t border-steel-light pt-4">
                   {selectedProject.description}
                 </p>
               </div>
 
-              {/* Close button */}
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#1a1a1a] border border-[#2a2a2a] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#222] transition-all"
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-black/[0.03] border border-steel-light flex items-center justify-center text-steel hover:text-ink hover:bg-black/[0.06] transition-all"
+                aria-label="Close"
               >
                 <X className="w-4 h-4" />
               </button>
