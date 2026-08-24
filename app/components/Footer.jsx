@@ -9,6 +9,7 @@ const footerLinks = [
   { label: "Projects", href: "/#projects" },
   { label: "Pricing", href: "/pricing" },
   { label: "About Us", href: "/about" },
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -53,7 +54,7 @@ const Footer = () => {
           <div className="flex flex-col gap-6 lg:col-span-1">
             <div className="flex items-center gap-3">
               <Image
-                src="/logo-02.png"
+                src="/logo-new.png"
                 alt="NOVA INC."
                 width={48}
                 height={48}

@@ -70,13 +70,13 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main className="bg-ink">
+    <main className="bg-paper">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative w-full pt-48 pb-32 px-6 md:px-12 bg-ink overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand/[0.08] rounded-full blur-[120px] pointer-events-none" />
+      <section className="relative w-full pt-48 pb-32 px-6 md:px-12 bg-surface overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.025)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto text-center">
           <motion.div
@@ -85,7 +85,7 @@ export default function PricingPage() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 mb-6"
           >
-            <span className="flex items-center gap-2 px-4 py-[6px] rounded-full border border-brand/30 bg-brand/10 text-brand font-mono text-[11px] font-medium tracking-[0.18em] uppercase">
+            <span className="flex items-center gap-2 px-4 py-[6px] rounded-full border border-brand/30 bg-brand/10 text-brand-dark font-mono text-[11px] font-medium tracking-[0.18em] uppercase">
               <span className="w-[6px] h-[6px] rounded-full bg-brand animate-pulse motion-reduce:animate-none" />
               Transparent Pricing
             </span>
@@ -96,11 +96,11 @@ export default function PricingPage() {
               initial={{ y: 60, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-5xl md:text-6xl font-bold text-white leading-tight tracking-tight"
+              className="font-display text-5xl md:text-6xl font-bold text-ink leading-tight tracking-tight"
             >
               Simple, Honest
               <br />
-              <span className="text-brand">Pricing Plans</span>
+              <span className="text-brand-dark">Pricing Plans</span>
             </motion.h1>
           </div>
 
@@ -108,7 +108,7 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-steel-light text-lg leading-relaxed"
+            className="text-steel text-lg leading-relaxed"
           >
             No hidden fees. No surprises. Choose the plan that fits your project
             scope and budget.
@@ -117,7 +117,7 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing Cards */}
-      <section className="relative w-full py-10 px-6 md:px-12 bg-ink">
+      <section className="relative w-full py-10 px-6 md:px-12 bg-paper">
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {plans.map((plan, index) => {
@@ -136,7 +136,7 @@ export default function PricingPage() {
                   className={`group relative rounded-3xl overflow-hidden flex flex-col ${
                     plan.highlighted
                       ? "bg-brand md:-translate-y-4 shadow-[0_20px_60px_rgba(126,199,66,0.25)]"
-                      : "bg-ink-soft border border-white/10"
+                      : "bg-white border border-steel-light shadow-sm"
                   }`}
                 >
                   {!plan.highlighted && (
@@ -154,7 +154,7 @@ export default function PricingPage() {
                         }`}
                       >
                         <Icon
-                          className={`w-5 h-5 ${plan.highlighted ? "text-ink" : "text-brand"}`}
+                          className={`w-5 h-5 ${plan.highlighted ? "text-ink" : "text-brand-dark"}`}
                         />
                       </div>
                       {plan.tag ? (
@@ -162,7 +162,7 @@ export default function PricingPage() {
                           {plan.tag}
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase text-steel-light/40">
+                        <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest uppercase text-steel/40">
                           <span className="w-2 h-px bg-current" />
                           PLAN·0{index + 1}
                         </span>
@@ -173,14 +173,14 @@ export default function PricingPage() {
                     <div>
                       <h3
                         className={`font-display font-bold text-xl tracking-tight ${
-                          plan.highlighted ? "text-ink" : "text-white"
+                          plan.highlighted ? "text-ink" : "text-ink"
                         }`}
                       >
                         {plan.name}
                       </h3>
                       <p
                         className={`text-[13px] mt-1 leading-relaxed ${
-                          plan.highlighted ? "text-ink/70" : "text-steel-light"
+                          plan.highlighted ? "text-ink/70" : "text-steel"
                         }`}
                       >
                         {plan.description}
@@ -190,22 +190,22 @@ export default function PricingPage() {
                     {/* Price */}
                     <div
                       className={`flex flex-col gap-1 pb-6 border-b ${
-                        plan.highlighted ? "border-ink/20" : "border-white/10"
+                        plan.highlighted
+                          ? "border-ink/20"
+                          : "border-steel-light"
                       }`}
                     >
                       <div className="flex items-end gap-1">
                         <span
                           className={`font-display text-5xl font-bold leading-none ${
-                            plan.highlighted ? "text-ink" : "text-white"
+                            plan.highlighted ? "text-ink" : "text-ink"
                           }`}
                         >
                           ${plan.priceUsd}
                         </span>
                         <span
                           className={`text-[13px] mb-1 ${
-                            plan.highlighted
-                              ? "text-ink/60"
-                              : "text-steel-light"
+                            plan.highlighted ? "text-ink/60" : "text-steel"
                           }`}
                         >
                           {plan.period}
@@ -213,9 +213,7 @@ export default function PricingPage() {
                       </div>
                       <span
                         className={`font-mono text-[11px] ${
-                          plan.highlighted
-                            ? "text-ink/50"
-                            : "text-steel-light/60"
+                          plan.highlighted ? "text-ink/50" : "text-steel/70"
                         }`}
                       >
                         ≈ {formatAfn(plan.priceUsd)} AFN
@@ -233,13 +231,15 @@ export default function PricingPage() {
                           >
                             <Check
                               className={`w-3 h-3 ${
-                                plan.highlighted ? "text-ink" : "text-brand"
+                                plan.highlighted
+                                  ? "text-ink"
+                                  : "text-brand-dark"
                               }`}
                             />
                           </div>
                           <span
                             className={`text-[13px] ${
-                              plan.highlighted ? "text-ink" : "text-steel-light"
+                              plan.highlighted ? "text-ink" : "text-steel"
                             }`}
                           >
                             {feature}
@@ -253,7 +253,7 @@ export default function PricingPage() {
                       href="/#contact"
                       className={`mt-4 flex items-center justify-center gap-2 w-full py-[13px] rounded-xl font-bold text-[14px] tracking-wide transition-all duration-200 ${
                         plan.highlighted
-                          ? "bg-ink text-white hover:bg-ink-soft"
+                          ? "bg-brand-deep text-white hover:bg-ink"
                           : "bg-brand hover:bg-brand-dark text-ink hover:shadow-[0_0_24px_rgba(126,199,66,0.3)]"
                       }`}
                     >
@@ -271,7 +271,7 @@ export default function PricingPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-center text-steel-light/50 font-mono text-[11px] mt-8"
+            className="text-center text-steel/60 font-mono text-[11px] mt-8"
           >
             AFN prices are an approximate reference at ~65.5 AFN/USD and may
             vary at time of invoicing.
@@ -280,7 +280,7 @@ export default function PricingPage() {
       </section>
 
       {/* Larger Plan CTA */}
-      <section className="relative w-full py-32 px-6 md:px-12 bg-paper overflow-hidden">
+      <section className="relative w-full py-32 px-6 md:px-12 bg-surface overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[180px] font-bold text-ink/[0.04] select-none pointer-events-none leading-none tracking-tighter whitespace-nowrap z-0">
           CUSTOM
         </div>
@@ -299,7 +299,7 @@ export default function PricingPage() {
               className="relative"
             >
               <div className="absolute -top-4 -left-4 w-full h-full rounded-3xl border border-brand/25 pointer-events-none z-0" />
-              <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-steel-light">
+              <div className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-white">
                 <Image
                   src="/b.png"
                   alt="Custom Pricing"
@@ -362,7 +362,7 @@ export default function PricingPage() {
 
               <Link
                 href="/#contact"
-                className="flex items-center gap-2 w-fit px-7 py-[13px] bg-ink hover:bg-brand text-white hover:text-ink font-bold text-[14px] tracking-wide rounded-xl transition-all duration-300 hover:shadow-[0_0_28px_rgba(126,199,66,0.3)]"
+                className="flex items-center gap-2 w-fit px-7 py-[13px] bg-brand-deep hover:bg-brand text-white hover:text-ink font-bold text-[14px] tracking-wide rounded-xl transition-all duration-300 hover:shadow-[0_0_28px_rgba(126,199,66,0.3)]"
               >
                 Contact Us
                 <ArrowUpRight className="w-4 h-4" />

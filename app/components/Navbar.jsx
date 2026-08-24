@@ -55,6 +55,7 @@ const Navbar = () => {
     { name: "Projects", href: "/#projects" },
     { name: "Pricing", href: "/pricing" },
     { name: "About", href: "/about" },
+    { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/#contact" },
   ];
 
@@ -92,7 +93,7 @@ const Navbar = () => {
               width={60}
               height={60}
               priority
-              className="object-contain w-[60px] h-[60px] lg:w-[72px] lg:h-11 shrink-0"
+              className="object-contain w-[60px] h-[60px] shrink-0"
             />
             <div className="hidden min-[380px]:block">
               <p className="font-display text-ink font-bold text-[14px] lg:text-[15px] tracking-[0.1em] leading-none uppercase">
