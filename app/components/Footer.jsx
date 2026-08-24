@@ -10,6 +10,8 @@ const footerLinks = [
   { label: "Pricing", href: "/pricing" },
   { label: "About Us", href: "/about" },
   { label: "FAQ", href: "/faq" },
+  { label: "News", href: "/news" },
+  { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/#contact" },
 ];
 
