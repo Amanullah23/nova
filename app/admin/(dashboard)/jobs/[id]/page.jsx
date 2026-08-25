@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import JobForm from "../_components/JobForm";
-import { mockJobs } from "../_data/mock-jobs";
+import { createClient } from "@/lib/supabase/server";
 
-export default function EditJobPage({ params }) {
-  const job = mockJobs.find((j) => j.id === Number(params.id));
+export default async function EditJobPage({ params }) {
+  const { id } = params;
+  const supabase = await createClient();
+  const { data: job } = await supabase
+    .from("jobs")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (!job) notFound();
 

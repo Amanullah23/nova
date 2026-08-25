@@ -1,18 +1,34 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Search, Pencil, Trash2, Star, MapPin } from "lucide-react";
-import { mockProjects, CATEGORIES } from "./_data/mock-projects";
+import { PROJECT_CATEGORIES } from "@/lib/constants/projects";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminProjectsPage() {
-  // TEMPORARY: local state seeded from mock data — resets on reload.
-  // Replace with a Supabase fetch (and delete mutation) in the next phase.
-  const [projects, setProjects] = useState(mockProjects);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error: dbError } = await supabase
+        .from("projects")
+        .select("*")
+        .order("year", { ascending: false });
+
+      if (dbError) setError(dbError.message);
+      else setProjects(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const filtered = projects.filter((p) => {
     const matchesSearch =
@@ -24,8 +40,15 @@ export default function AdminProjectsPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const confirmDelete = () => {
-    setProjects((prev) => prev.filter((p) => p.id !== pendingDelete.id));
+  const confirmDelete = async () => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", pendingDelete.id);
+
+    if (dbError) setError(dbError.message);
+    else setProjects((prev) => prev.filter((p) => p.id !== pendingDelete.id));
     setPendingDelete(null);
   };
 
@@ -50,7 +73,13 @@ export default function AdminProjectsPage() {
         </Link>
       </div>
 
-      {/* Filters */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel" />
@@ -68,7 +97,7 @@ export default function AdminProjectsPage() {
           className="px-4 py-2.5 bg-white border border-steel-light rounded-xl text-ink text-[13px] focus:outline-none focus:border-brand transition-all duration-200"
         >
           <option value="All">All Categories</option>
-          {CATEGORIES.map((c) => (
+          {PROJECT_CATEGORIES.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -85,10 +114,15 @@ export default function AdminProjectsPage() {
         </select>
       </div>
 
-      {/* Grid of project cards — thumbnails matter more here than a plain table */}
-      {filtered.length === 0 ? (
+      {loading ? (
         <div className="bg-white border border-steel-light rounded-2xl px-5 py-16 text-center text-steel text-[13px]">
-          No projects match your filters.
+          Loading projects...
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-white border border-steel-light rounded-2xl px-5 py-16 text-center text-steel text-[13px]">
+          {projects.length === 0
+            ? "No projects yet — add your first one."
+            : "No projects match your filters."}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -98,12 +132,14 @@ export default function AdminProjectsPage() {
               className="group relative bg-white border border-steel-light rounded-2xl overflow-hidden hover:border-brand/40 transition-colors duration-200"
             >
               <div className="relative h-[150px] overflow-hidden bg-paper">
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  fill
-                  className="object-cover"
-                />
+                {p.image && (
+                  <Image
+                    src={p.image}
+                    alt={p.title}
+                    fill
+                    className="object-cover"
+                  />
+                )}
                 {p.featured && (
                   <div className="absolute top-3 left-3 w-7 h-7 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center">
                     <Star className="w-3.5 h-3.5 text-brand-dark fill-brand-dark" />
@@ -159,7 +195,6 @@ export default function AdminProjectsPage() {
         </div>
       )}
 
-      {/* Delete confirmation modal */}
       {pendingDelete && (
         <div
           className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-center justify-center px-4"

@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import ProjectForm from "../_components/ProjectForm";
-import { mockProjects } from "../_data/mock-projects";
+import { createClient } from "@/lib/supabase/server";
 
-export default function EditProjectPage({ params }) {
-  const project = mockProjects.find((p) => p.id === Number(params.id));
+export default async function EditProjectPage({ params }) {
+  const { id } = params;
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (!project) notFound();
 

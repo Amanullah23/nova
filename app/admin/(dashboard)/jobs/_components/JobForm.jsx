@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { DEPARTMENTS, EMPLOYMENT_TYPES } from "../_data/mock-jobs";
+import { JOB_DEPARTMENTS, JOB_EMPLOYMENT_TYPES } from "@/lib/constants/jobs";
+import { createClient } from "@/lib/supabase/client";
 
 const slugify = (str) =>
   str
@@ -18,14 +19,15 @@ export default function JobForm({ initialData, mode }) {
     initialData ?? {
       title: "",
       slug: "",
-      department: DEPARTMENTS[0],
+      department: JOB_DEPARTMENTS[0],
       location: "",
-      type: EMPLOYMENT_TYPES[0],
+      type: JOB_EMPLOYMENT_TYPES[0],
       description: "",
       status: "open",
     },
   );
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
 
   const handleTitleChange = (value) => {
@@ -38,13 +40,37 @@ export default function JobForm({ initialData, mode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setSaving(true);
 
-    // TEMPORARY: no backend yet — simulates a save and returns to the list.
-    // Replace with a Supabase insert/update once the CMS is wired in.
-    await new Promise((r) => setTimeout(r, 500));
+    const supabase = createClient();
+    const payload = {
+      title: form.title,
+      slug: form.slug,
+      department: form.department,
+      location: form.location,
+      type: form.type,
+      description: form.description,
+      status: form.status,
+    };
+
+    const { error: dbError } =
+      mode === "edit"
+        ? await supabase.from("jobs").update(payload).eq("id", initialData.id)
+        : await supabase.from("jobs").insert(payload);
+
+    if (dbError) {
+      setError(
+        dbError.code === "23505"
+          ? "That URL slug is already in use — choose a different one."
+          : dbError.message,
+      );
+      setSaving(false);
+      return;
+    }
 
     router.push("/admin/jobs");
+    router.refresh();
   };
 
   return (
@@ -61,6 +87,13 @@ export default function JobForm({ initialData, mode }) {
           {mode === "edit" ? "Edit Job Posting" : "New Job Posting"}
         </h1>
       </div>
+
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
 
       <div className="bg-white border border-steel-light rounded-2xl p-6 md:p-8 flex flex-col gap-5">
         <div className="flex flex-col gap-1">
@@ -92,10 +125,6 @@ export default function JobForm({ initialData, mode }) {
             placeholder="job-url-slug"
             className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink font-mono text-[13px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
           />
-          <p className="text-steel/60 text-[11px] mt-0.5">
-            Used to pre-select this role when a candidate clicks "Apply" on the
-            Careers page.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -108,7 +137,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, department: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {DEPARTMENTS.map((d) => (
+              {JOB_DEPARTMENTS.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>
@@ -125,7 +154,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, type: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {EMPLOYMENT_TYPES.map((t) => (
+              {JOB_EMPLOYMENT_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {t}
                 </option>

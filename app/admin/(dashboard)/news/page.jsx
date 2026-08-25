@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2, Star } from "lucide-react";
-import { mockArticles, CATEGORIES } from "./_data/mock-articles";
+import { NEWS_CATEGORIES } from "@/lib/constants/news";
+import { createClient } from "@/lib/supabase/client";
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString("en-US", {
@@ -12,13 +13,31 @@ const formatDate = (iso) =>
   });
 
 export default function AdminNewsPage() {
-  // TEMPORARY: local state seeded from mock data — resets on reload.
-  // Replace with a Supabase fetch (and delete mutation) in the next phase.
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error: dbError } = await supabase
+        .from("articles")
+        .select("*")
+        .order("date", { ascending: false });
+
+      if (dbError) {
+        setError(dbError.message);
+      } else {
+        setArticles(data);
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const filtered = articles.filter((a) => {
     const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
@@ -28,8 +47,18 @@ export default function AdminNewsPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const confirmDelete = () => {
-    setArticles((prev) => prev.filter((a) => a.id !== pendingDelete.id));
+  const confirmDelete = async () => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("articles")
+      .delete()
+      .eq("id", pendingDelete.id);
+
+    if (dbError) {
+      setError(dbError.message);
+    } else {
+      setArticles((prev) => prev.filter((a) => a.id !== pendingDelete.id));
+    }
     setPendingDelete(null);
   };
 
@@ -54,6 +83,13 @@ export default function AdminNewsPage() {
         </Link>
       </div>
 
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
@@ -72,7 +108,7 @@ export default function AdminNewsPage() {
           className="px-4 py-2.5 bg-white border border-steel-light rounded-xl text-ink text-[13px] focus:outline-none focus:border-brand transition-all duration-200"
         >
           <option value="All">All Categories</option>
-          {CATEGORIES.map((c) => (
+          {NEWS_CATEGORIES.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
@@ -113,13 +149,24 @@ export default function AdminNewsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {loading ? (
                 <tr>
                   <td
                     colSpan={5}
                     className="px-5 py-10 text-center text-steel text-[13px]"
                   >
-                    No articles match your filters.
+                    Loading articles...
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-10 text-center text-steel text-[13px]"
+                  >
+                    {articles.length === 0
+                      ? "No articles yet — create your first one."
+                      : "No articles match your filters."}
                   </td>
                 </tr>
               ) : (
@@ -183,7 +230,6 @@ export default function AdminNewsPage() {
         </div>
       </div>
 
-      {/* Delete confirmation modal */}
       {pendingDelete && (
         <div
           className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-center justify-center px-4"

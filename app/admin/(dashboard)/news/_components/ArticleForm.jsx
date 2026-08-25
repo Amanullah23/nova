@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { CATEGORIES } from "../_data/mock-articles";
+import { NEWS_CATEGORIES } from "@/lib/constants/news";
+import { createClient } from "@/lib/supabase/client";
 
 const slugify = (str) =>
   str
@@ -20,13 +21,14 @@ export default function ArticleForm({ initialData, mode }) {
       slug: "",
       excerpt: "",
       content: "",
-      category: CATEGORIES[0],
+      category: NEWS_CATEGORIES[0],
       image: "",
       status: "draft",
       featured: false,
     },
   );
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
 
   const handleTitleChange = (value) => {
@@ -39,13 +41,41 @@ export default function ArticleForm({ initialData, mode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setSaving(true);
 
-    // TEMPORARY: no backend yet — simulates a save and returns to the list.
-    // Replace with a Supabase insert/update once the CMS is wired in.
-    await new Promise((r) => setTimeout(r, 500));
+    const supabase = createClient();
+    const payload = {
+      title: form.title,
+      slug: form.slug,
+      excerpt: form.excerpt,
+      content: form.content,
+      category: form.category,
+      image: form.image || null,
+      status: form.status,
+      featured: form.featured,
+    };
+
+    const { error: dbError } =
+      mode === "edit"
+        ? await supabase
+            .from("articles")
+            .update(payload)
+            .eq("id", initialData.id)
+        : await supabase.from("articles").insert(payload);
+
+    if (dbError) {
+      setError(
+        dbError.code === "23505"
+          ? "That URL slug is already in use — choose a different one."
+          : dbError.message,
+      );
+      setSaving(false);
+      return;
+    }
 
     router.push("/admin/news");
+    router.refresh();
   };
 
   return (
@@ -62,6 +92,13 @@ export default function ArticleForm({ initialData, mode }) {
           {mode === "edit" ? "Edit Article" : "New Article"}
         </h1>
       </div>
+
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
 
       <div className="bg-white border border-steel-light rounded-2xl p-6 md:p-8 flex flex-col gap-5">
         <div className="flex flex-col gap-1">
@@ -108,7 +145,7 @@ export default function ArticleForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {CATEGORIES.map((c) => (
+              {NEWS_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

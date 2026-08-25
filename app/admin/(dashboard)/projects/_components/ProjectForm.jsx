@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { CATEGORIES } from "../_data/mock-projects";
+import { PROJECT_CATEGORIES } from "@/lib/constants/projects";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ProjectForm({ initialData, mode }) {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function ProjectForm({ initialData, mode }) {
       title: "",
       location: "",
       image: "",
-      category: CATEGORIES[0],
+      category: PROJECT_CATEGORIES[0],
       year: new Date().getFullYear().toString(),
       description: "",
       status: "draft",
@@ -20,16 +21,41 @@ export default function ProjectForm({ initialData, mode }) {
     },
   );
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     setSaving(true);
 
-    // TEMPORARY: no backend yet — simulates a save and returns to the list.
-    // Replace with a Supabase insert/update once the CMS is wired in.
-    await new Promise((r) => setTimeout(r, 500));
+    const supabase = createClient();
+    const payload = {
+      title: form.title,
+      location: form.location,
+      image: form.image || null,
+      category: form.category,
+      year: form.year,
+      description: form.description,
+      status: form.status,
+      featured: form.featured,
+    };
+
+    const { error: dbError } =
+      mode === "edit"
+        ? await supabase
+            .from("projects")
+            .update(payload)
+            .eq("id", initialData.id)
+        : await supabase.from("projects").insert(payload);
+
+    if (dbError) {
+      setError(dbError.message);
+      setSaving(false);
+      return;
+    }
 
     router.push("/admin/projects");
+    router.refresh();
   };
 
   return (
@@ -46,6 +72,13 @@ export default function ProjectForm({ initialData, mode }) {
           {mode === "edit" ? "Edit Project" : "New Project"}
         </h1>
       </div>
+
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
 
       <div className="bg-white border border-steel-light rounded-2xl p-6 md:p-8 flex flex-col gap-5">
         <div className="flex flex-col gap-1">
@@ -104,7 +137,7 @@ export default function ProjectForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, category: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {CATEGORIES.map((c) => (
+              {PROJECT_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>

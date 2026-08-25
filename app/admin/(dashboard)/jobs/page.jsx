@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
-import { mockJobs, DEPARTMENTS } from "./_data/mock-jobs";
+import { JOB_DEPARTMENTS } from "@/lib/constants/jobs";
+import { createClient } from "@/lib/supabase/client";
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString("en-US", {
@@ -12,13 +13,28 @@ const formatDate = (iso) =>
   });
 
 export default function AdminJobsPage() {
-  // TEMPORARY: local state seeded from mock data — resets on reload.
-  // Replace with a Supabase fetch (and delete mutation) in the next phase.
-  const [jobs, setJobs] = useState(mockJobs);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error: dbError } = await supabase
+        .from("jobs")
+        .select("*")
+        .order("posted_date", { ascending: false });
+
+      if (dbError) setError(dbError.message);
+      else setJobs(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const filtered = jobs.filter((j) => {
     const matchesSearch = j.title.toLowerCase().includes(search.toLowerCase());
@@ -28,8 +44,15 @@ export default function AdminJobsPage() {
     return matchesSearch && matchesDepartment && matchesStatus;
   });
 
-  const confirmDelete = () => {
-    setJobs((prev) => prev.filter((j) => j.id !== pendingDelete.id));
+  const confirmDelete = async () => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("jobs")
+      .delete()
+      .eq("id", pendingDelete.id);
+
+    if (dbError) setError(dbError.message);
+    else setJobs((prev) => prev.filter((j) => j.id !== pendingDelete.id));
     setPendingDelete(null);
   };
 
@@ -54,7 +77,13 @@ export default function AdminJobsPage() {
         </Link>
       </div>
 
-      {/* Filters */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel" />
@@ -72,7 +101,7 @@ export default function AdminJobsPage() {
           className="px-4 py-2.5 bg-white border border-steel-light rounded-xl text-ink text-[13px] focus:outline-none focus:border-brand transition-all duration-200"
         >
           <option value="All">All Departments</option>
-          {DEPARTMENTS.map((d) => (
+          {JOB_DEPARTMENTS.map((d) => (
             <option key={d} value={d}>
               {d}
             </option>
@@ -89,7 +118,6 @@ export default function AdminJobsPage() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="bg-white border border-steel-light rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[760px]">
@@ -116,13 +144,24 @@ export default function AdminJobsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {loading ? (
                 <tr>
                   <td
                     colSpan={6}
                     className="px-5 py-10 text-center text-steel text-[13px]"
                   >
-                    No job postings match your filters.
+                    Loading job postings...
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-5 py-10 text-center text-steel text-[13px]"
+                  >
+                    {jobs.length === 0
+                      ? "No job postings yet — create your first one."
+                      : "No job postings match your filters."}
                   </td>
                 </tr>
               ) : (
@@ -150,7 +189,7 @@ export default function AdminJobsPage() {
                       {j.location}
                     </td>
                     <td className="px-5 py-4 font-mono text-steel text-[12px] whitespace-nowrap">
-                      {formatDate(j.postedDate)}
+                      {formatDate(j.posted_date)}
                     </td>
                     <td className="px-5 py-4">
                       <span
@@ -189,7 +228,6 @@ export default function AdminJobsPage() {
         </div>
       </div>
 
-      {/* Delete confirmation modal */}
       {pendingDelete && (
         <div
           className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm flex items-center justify-center px-4"

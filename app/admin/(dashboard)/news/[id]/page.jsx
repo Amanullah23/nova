@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import ArticleForm from "../_components/ArticleForm";
-import { mockArticles } from "../_data/mock-articles";
+import { createClient } from "@/lib/supabase/server";
 
-export default function EditArticlePage({ params }) {
-  const article = mockArticles.find((a) => a.id === Number(params.id));
+export default async function EditArticlePage({ params }) {
+  const { id } = params;
+  const supabase = await createClient();
+  const { data: article } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (!article) notFound();
 

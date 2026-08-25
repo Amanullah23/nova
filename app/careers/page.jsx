@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
@@ -13,54 +13,7 @@ import {
   ShieldCheck,
   Users2,
 } from "lucide-react";
-
-const openPositions = [
-  {
-    id: "site-engineer",
-    title: "Site Engineer",
-    department: "Engineering",
-    location: "Kabul",
-    type: "Full-time",
-    description:
-      "Oversee daily site activities, coordinate with subcontractors, and ensure structural work meets design specifications and safety standards.",
-  },
-  {
-    id: "project-manager",
-    title: "Project Manager",
-    department: "Operations",
-    location: "Kabul",
-    type: "Full-time",
-    description:
-      "Own project timelines and budgets end-to-end, serving as the main point of contact between clients, engineering, and site teams.",
-  },
-  {
-    id: "quantity-surveyor",
-    title: "Quantity Surveyor",
-    department: "Finance",
-    location: "Herat",
-    type: "Full-time",
-    description:
-      "Prepare cost estimates, manage procurement budgets, and track project expenditure against approved plans.",
-  },
-  {
-    id: "safety-officer",
-    title: "Safety Officer",
-    department: "Operations",
-    location: "Kabul",
-    type: "Full-time",
-    description:
-      "Enforce site safety protocols, conduct regular inspections, and lead safety training across active construction sites.",
-  },
-  {
-    id: "junior-civil-engineer",
-    title: "Junior Civil Engineer",
-    department: "Engineering",
-    location: "Kabul",
-    type: "Full-time · Entry-level",
-    description:
-      "Support senior engineers on structural design and planning tasks — a strong fit for recent graduates looking to build hands-on experience.",
-  },
-];
+import { createClient } from "@/lib/supabase/client";
 
 const benefits = [
   {
@@ -89,6 +42,8 @@ const benefits = [
 
 export default function CareersPage() {
   const formRef = useRef(null);
+  const [openPositions, setOpenPositions] = useState([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -99,9 +54,22 @@ export default function CareersPage() {
   });
   const [status, setStatus] = useState("idle");
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("status", "open")
+        .order("posted_date", { ascending: false });
+      setOpenPositions(data ?? []);
+      setLoadingJobs(false);
+    };
+    load();
+  }, []);
+
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleApplyClick = (positionTitle) => {
     setFormData((prev) => ({ ...prev, position: positionTitle }));
@@ -117,7 +85,7 @@ export default function CareersPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: "16f48704-1666-461c-a194-5d43af9a8652",
+          access_key: "f28cf689-3c00-460d-8610-c9333a0a1fb8",
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
@@ -244,50 +212,61 @@ export default function CareersPage() {
             </span>
           </motion.div>
 
-          <div className="flex flex-col gap-4">
-            {openPositions.map((pos, index) => (
-              <motion.div
-                key={pos.id}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.06 }}
-                className="group bg-white border border-steel-light rounded-2xl p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5 hover:border-brand/40 transition-colors duration-300"
-              >
-                <div className="flex-1 flex flex-col gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-display text-ink font-bold text-lg tracking-tight">
-                      {pos.title}
-                    </h3>
-                    <span className="font-mono text-[10px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full bg-brand/10 text-brand-dark">
-                      {pos.department}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-4 font-mono text-[11px] text-steel uppercase tracking-wide">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {pos.location}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      {pos.type}
-                    </span>
-                  </div>
-                  <p className="text-steel text-[13px] leading-relaxed mt-1 max-w-xl">
-                    {pos.description}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleApplyClick(pos.title)}
-                  className="shrink-0 flex items-center justify-center gap-2 px-5 py-[10px] bg-brand hover:bg-brand-dark text-ink text-[13px] font-bold tracking-wide rounded-xl transition-all duration-200 whitespace-nowrap"
+          {loadingJobs ? (
+            <p className="text-steel text-center py-10 text-[13px]">
+              Loading open positions...
+            </p>
+          ) : openPositions.length === 0 ? (
+            <p className="text-steel text-center py-10 text-[13px]">
+              No open positions right now — check back soon, or submit a general
+              application below.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {openPositions.map((pos, index) => (
+                <motion.div
+                  key={pos.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.06 }}
+                  className="group bg-white border border-steel-light rounded-2xl p-6 md:p-7 flex flex-col md:flex-row md:items-center gap-5 hover:border-brand/40 transition-colors duration-300"
                 >
-                  Apply Now
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="flex-1 flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-display text-ink font-bold text-lg tracking-tight">
+                        {pos.title}
+                      </h3>
+                      <span className="font-mono text-[10px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full bg-brand/10 text-brand-dark">
+                        {pos.department}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4 font-mono text-[11px] text-steel uppercase tracking-wide">
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {pos.location}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" />
+                        {pos.type}
+                      </span>
+                    </div>
+                    <p className="text-steel text-[13px] leading-relaxed mt-1 max-w-xl">
+                      {pos.description}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => handleApplyClick(pos.title)}
+                    className="shrink-0 flex items-center justify-center gap-2 px-5 py-[10px] bg-brand hover:bg-brand-dark text-ink text-[13px] font-bold tracking-wide rounded-xl transition-all duration-200 whitespace-nowrap"
+                  >
+                    Apply Now
+                    <ArrowUpRight className="w-4 h-4" />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <p className="text-steel text-[13px] text-center mt-10">
             Don't see a role that fits? Submit a general application below.
@@ -325,7 +304,6 @@ export default function CareersPage() {
                   </p>
                 </div>
               )}
-
               {status === "error" && (
                 <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                   <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
@@ -366,7 +344,6 @@ export default function CareersPage() {
                       className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
                     />
                   </div>
-
                   <div className="flex flex-col gap-1">
                     <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
                       Phone Number
