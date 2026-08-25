@@ -127,10 +127,10 @@ const Navbar = () => {
           {/* CTA */}
           <div className="hidden lg:flex items-center">
             <Link
-              href="/#contact"
+              href="/admin/login"
               className="flex items-center gap-2 px-5 py-[9px] bg-brand hover:bg-brand-dark text-ink font-body text-[13px] font-bold tracking-wide rounded-full transition-all duration-200 hover:shadow-[0_0_20px_rgba(126,199,66,0.3)]"
             >
-              Get Started
+              Login
             </Link>
           </div>
 
@@ -172,11 +172,11 @@ const Navbar = () => {
             ))}
 
             <Link
-              href="/#contact"
+              href="/admin/login"
               onClick={() => setMenuOpen(false)}
               className="mt-3 block text-center px-5 py-3.5 bg-brand hover:bg-brand-dark text-ink font-body text-[14px] font-bold tracking-wide rounded-xl transition-all duration-200"
             >
-              Get Started
+              Login
             </Link>
           </div>
         </div>
