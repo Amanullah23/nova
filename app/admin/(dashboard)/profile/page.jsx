@@ -1,15 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User, Mail, Lock, Save, Camera } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminProfilePage() {
-  // TEMPORARY: seeded with placeholder admin data — replace with the
-  // logged-in user's real record from Supabase Auth in the next phase.
-  const [profile, setProfile] = useState({
-    name: "Amanullah Yawari",
-    email: "admin@nova.inc",
-    phone: "+93 74 944 2276",
-  });
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
+  const [authEmail, setAuthEmail] = useState(""); // the confirmed, currently-active email — used to verify the current password
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
   const [passwords, setPasswords] = useState({
     current: "",
     next: "",
@@ -17,21 +16,59 @@ export default function AdminProfilePage() {
   });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
-  const [profileSaved, setProfileSaved] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
+  const [profileError, setProfileError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaved, setPasswordSaved] = useState(false);
 
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data?.user) {
+        setLoadError(error?.message ?? "Could not load your account.");
+      } else {
+        setProfile({
+          name: data.user.user_metadata?.full_name ?? "",
+          email: data.user.email ?? "",
+          phone: data.user.user_metadata?.phone ?? "",
+        });
+        setAuthEmail(data.user.email ?? "");
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    setProfileError("");
+    setProfileMessage("");
     setSavingProfile(true);
-    setProfileSaved(false);
 
-    // TEMPORARY: no backend yet — simulates a save.
-    // Replace with a Supabase update to the admin's user record.
-    await new Promise((r) => setTimeout(r, 500));
+    const supabase = createClient();
+    const emailChanged = profile.email !== authEmail;
+
+    const updates = {
+      data: { full_name: profile.name, phone: profile.phone },
+    };
+    if (emailChanged) updates.email = profile.email;
+
+    const { error } = await supabase.auth.updateUser(updates);
+
+    if (error) {
+      setProfileError(error.message);
+      setSavingProfile(false);
+      return;
+    }
 
     setSavingProfile(false);
-    setProfileSaved(true);
+    setProfileMessage(
+      emailChanged
+        ? "Name and phone updated. Check your inbox to confirm the email change — it won't take effect until confirmed."
+        : "Profile updated.",
+    );
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -49,15 +86,55 @@ export default function AdminProfilePage() {
     }
 
     setSavingPassword(true);
+    const supabase = createClient();
 
-    // TEMPORARY: no backend yet — simulates a save.
-    // Replace with supabase.auth.updateUser({ password }) in the next phase.
-    await new Promise((r) => setTimeout(r, 500));
+    // No dedicated "verify current password" endpoint in Supabase — re-signing in
+    // with the current password is the standard way to confirm it's correct
+    // before allowing the change.
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: authEmail,
+      password: passwords.current,
+    });
+
+    if (verifyError) {
+      setPasswordError("Current password is incorrect.");
+      setSavingPassword(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: passwords.next,
+    });
+
+    if (updateError) {
+      setPasswordError(updateError.message);
+      setSavingPassword(false);
+      return;
+    }
 
     setSavingPassword(false);
     setPasswordSaved(true);
     setPasswords({ current: "", next: "", confirm: "" });
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <p className="text-steel text-[13px]">Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{loadError}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-6">
@@ -91,17 +168,25 @@ export default function AdminProfilePage() {
           </div>
           <div>
             <p className="font-display text-ink font-bold text-lg tracking-tight">
-              {profile.name}
+              {profile.name || "Unnamed Admin"}
             </p>
-            <p className="text-steel text-[13px]">{profile.email}</p>
+            <p className="text-steel text-[13px]">{authEmail}</p>
           </div>
         </div>
 
-        {profileSaved && (
+        {profileMessage && (
           <div className="flex items-center gap-3 bg-brand/10 border border-brand/30 rounded-xl px-4 py-3">
             <div className="w-2 h-2 rounded-full bg-brand shrink-0" />
             <p className="text-brand-dark text-[13px] font-semibold">
-              Profile updated.
+              {profileMessage}
+            </p>
+          </div>
+        )}
+        {profileError && (
+          <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+            <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+            <p className="text-red-700 text-[13px] font-medium">
+              {profileError}
             </p>
           </div>
         )}
@@ -138,6 +223,12 @@ export default function AdminProfilePage() {
               className="w-full pl-10 pr-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             />
           </div>
+          {profile.email !== authEmail && (
+            <p className="text-steel/60 text-[11px] mt-0.5">
+              Changing this will require confirming via a link sent to your
+              inbox before it takes effect.
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1">

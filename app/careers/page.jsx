@@ -80,41 +80,56 @@ export default function CareersPage() {
     e.preventDefault();
     setStatus("loading");
 
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          access_key: "f28cf689-3c00-460d-8610-c9333a0a1fb8",
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          position: formData.position || "General Application",
-          resume_link: formData.resumeLink,
-          message: formData.message,
-          subject: `New Job Application — ${formData.position || "General"} — NOVA INC.`,
-          from_name: "NOVA INC. Careers",
-        }),
-      });
+    // Same reasoning as Contact.jsx: generate the id client-side since
+    // applications' SELECT policy is authenticated-only.
+    const id = crypto.randomUUID();
+    const supabase = createClient();
+    const { error: dbError } = await supabase.from("applications").insert({
+      id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      position: formData.position || "General Application",
+      resume_link: formData.resumeLink || null,
+      message: formData.message,
+    });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setStatus("success");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          position: "",
-          resumeLink: "",
-          message: "",
-        });
-      } else {
-        setStatus("error");
-      }
-    } catch {
+    if (dbError) {
       setStatus("error");
+      return;
     }
+
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "application", id }),
+    }).catch(() => {});
+
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_key: "f28cf689-3c00-460d-8610-c9333a0a1fb8",
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        position: formData.position || "General Application",
+        resume_link: formData.resumeLink,
+        message: formData.message,
+        subject: `New Job Application — ${formData.position || "General"} — NOVA INC.`,
+        from_name: "NOVA INC. Careers",
+      }),
+    }).catch(() => {});
+
+    setStatus("success");
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      position: "",
+      resumeLink: "",
+      message: "",
+    });
   };
 
   return (

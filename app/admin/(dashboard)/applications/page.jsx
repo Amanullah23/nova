@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   X,
@@ -9,7 +9,7 @@ import {
   ExternalLink,
   Calendar,
 } from "lucide-react";
-import { mockApplications } from "./_data/mock-applications";
+import { createClient } from "@/lib/supabase/client";
 
 const STATUSES = ["new", "reviewed", "shortlisted", "rejected"];
 
@@ -28,13 +28,28 @@ const formatDate = (iso) =>
   });
 
 export default function AdminApplicationsPage() {
-  // TEMPORARY: local state seeded from mock data — resets on reload.
-  // Replace with Supabase queries (fetch, status update, delete) in the next phase.
-  const [applications, setApplications] = useState(mockApplications);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selected, setSelected] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error: dbError } = await supabase
+        .from("applications")
+        .select("*")
+        .order("submitted_date", { ascending: false });
+
+      if (dbError) setError(dbError.message);
+      else setApplications(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const filtered = applications.filter((a) => {
     const matchesSearch =
@@ -44,7 +59,17 @@ export default function AdminApplicationsPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const updateStatus = (id, status) => {
+  const updateStatus = async (id, status) => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("applications")
+      .update({ status })
+      .eq("id", id);
+
+    if (dbError) {
+      setError(dbError.message);
+      return;
+    }
     setApplications((prev) =>
       prev.map((a) => (a.id === id ? { ...a, status } : a)),
     );
@@ -53,9 +78,19 @@ export default function AdminApplicationsPage() {
     );
   };
 
-  const confirmDelete = () => {
-    setApplications((prev) => prev.filter((a) => a.id !== pendingDelete.id));
-    if (selected?.id === pendingDelete.id) setSelected(null);
+  const confirmDelete = async () => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("applications")
+      .delete()
+      .eq("id", pendingDelete.id);
+
+    if (dbError) {
+      setError(dbError.message);
+    } else {
+      setApplications((prev) => prev.filter((a) => a.id !== pendingDelete.id));
+      if (selected?.id === pendingDelete.id) setSelected(null);
+    }
     setPendingDelete(null);
   };
 
@@ -71,7 +106,13 @@ export default function AdminApplicationsPage() {
         </p>
       </div>
 
-      {/* Filters */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel" />
@@ -97,7 +138,6 @@ export default function AdminApplicationsPage() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="bg-white border border-steel-light rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[700px]">
@@ -121,13 +161,24 @@ export default function AdminApplicationsPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {loading ? (
                 <tr>
                   <td
                     colSpan={5}
                     className="px-5 py-10 text-center text-steel text-[13px]"
                   >
-                    No applications match your filters.
+                    Loading applications...
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-5 py-10 text-center text-steel text-[13px]"
+                  >
+                    {applications.length === 0
+                      ? "No applications yet."
+                      : "No applications match your filters."}
                   </td>
                 </tr>
               ) : (
@@ -151,7 +202,7 @@ export default function AdminApplicationsPage() {
                       {a.position}
                     </td>
                     <td className="px-5 py-4 font-mono text-steel text-[12px] whitespace-nowrap">
-                      {formatDate(a.submittedDate)}
+                      {formatDate(a.submitted_date)}
                     </td>
                     <td className="px-5 py-4">
                       <span
@@ -182,7 +233,6 @@ export default function AdminApplicationsPage() {
         </div>
       </div>
 
-      {/* Detail drawer */}
       {selected && (
         <div
           className="fixed inset-0 z-50 flex justify-end"
@@ -225,22 +275,24 @@ export default function AdminApplicationsPage() {
                   <Mail className="w-4 h-4 text-brand-dark shrink-0" />
                   <span className="text-[13px]">{selected.email}</span>
                 </a>
-                <a
-                  href={`tel:${selected.phone}`}
-                  className="flex items-center gap-3 text-steel hover:text-ink transition-colors"
-                >
-                  <Phone className="w-4 h-4 text-brand-dark shrink-0" />
-                  <span className="text-[13px]">{selected.phone}</span>
-                </a>
+                {selected.phone && (
+                  <a
+                    href={`tel:${selected.phone}`}
+                    className="flex items-center gap-3 text-steel hover:text-ink transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-brand-dark shrink-0" />
+                    <span className="text-[13px]">{selected.phone}</span>
+                  </a>
+                )}
                 <div className="flex items-center gap-3 text-steel">
                   <Calendar className="w-4 h-4 text-brand-dark shrink-0" />
                   <span className="text-[13px]">
-                    Submitted {formatDate(selected.submittedDate)}
+                    Submitted {formatDate(selected.submitted_date)}
                   </span>
                 </div>
-                {selected.resumeLink ? (
+                {selected.resume_link ? (
                   <a
-                    href={selected.resumeLink}
+                    href={selected.resume_link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 text-brand-dark hover:underline"
@@ -301,7 +353,6 @@ export default function AdminApplicationsPage() {
         </div>
       )}
 
-      {/* Delete confirmation modal */}
       {pendingDelete && (
         <div
           className="fixed inset-0 z-[60] bg-ink/40 backdrop-blur-sm flex items-center justify-center px-4"

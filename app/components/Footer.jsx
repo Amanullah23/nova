@@ -1,7 +1,10 @@
+"use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { MapPin, Phone, Mail } from "lucide-react";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { createClient } from "@/lib/supabase/client";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -15,36 +18,61 @@ const footerLinks = [
   { label: "Contact", href: "/#contact" },
 ];
 
-const contactInfo = [
-  { icon: MapPin, value: "Dasht-e Barchi, Kabul — Afghanistan" },
-  { icon: Phone, value: "+93 74 944 2276" },
-  { icon: Mail, value: "nova.inc.cc@gmail.com" },
-];
-
-const socials = [
-  {
-    icon: FaFacebook,
-    href: "https://www.facebook.com/nova.inc.construction",
-    label: "Facebook",
-  },
-  {
-    icon: FaXTwitter,
-    href: "https://www.twitter.com/NovaIncCC",
-    label: "Twitter",
-  },
-  {
-    icon: FaInstagram,
-    href: "https://www.instagram.com/nova.inc.construction?igsh=djBqa3N3czRoNHlt",
-    label: "Instagram",
-  },
-  {
-    icon: FaLinkedin,
-    href: "https://www.linkedin.com/company/nova-inc-construction/",
-    label: "LinkedIn",
-  },
-];
+// Matches what was hardcoded before — used until the Supabase fetch resolves,
+// and as a fallback for any field left blank in Settings.
+const DEFAULTS = {
+  companyName: "Nova Inc.",
+  tagline: "Construction",
+  email: "nova.inc.cc@gmail.com",
+  phone: "+93 74 944 2276",
+  address: "Dasht-e Barchi, Kabul — Afghanistan",
+  facebook: "https://www.facebook.com/nova.inc.construction",
+  twitter: "https://www.twitter.com/NovaIncCC",
+  instagram: "https://www.instagram.com/nova.inc.construction",
+  linkedin: "https://www.linkedin.com/company/nova-inc-construction/",
+};
 
 const Footer = () => {
+  const [settings, setSettings] = useState(DEFAULTS);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle();
+      if (data) {
+        setSettings({
+          companyName: data.company_name || DEFAULTS.companyName,
+          tagline: data.tagline || DEFAULTS.tagline,
+          email: data.email || DEFAULTS.email,
+          phone: data.phone || DEFAULTS.phone,
+          address: data.address || DEFAULTS.address,
+          facebook: data.facebook || DEFAULTS.facebook,
+          twitter: data.twitter || DEFAULTS.twitter,
+          instagram: data.instagram || DEFAULTS.instagram,
+          linkedin: data.linkedin || DEFAULTS.linkedin,
+        });
+      }
+    };
+    load();
+  }, []);
+
+  const contactInfo = [
+    { icon: MapPin, value: settings.address },
+    { icon: Phone, value: settings.phone },
+    { icon: Mail, value: settings.email },
+  ];
+
+  const socials = [
+    { icon: FaFacebook, href: settings.facebook, label: "Facebook" },
+    { icon: FaXTwitter, href: settings.twitter, label: "Twitter" },
+    { icon: FaInstagram, href: settings.instagram, label: "Instagram" },
+    { icon: FaLinkedin, href: settings.linkedin, label: "LinkedIn" },
+  ];
+
   return (
     <footer className="relative bg-brand-deep overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
@@ -65,10 +93,10 @@ const Footer = () => {
               />
               <div>
                 <p className="font-display text-white font-bold text-[15px] tracking-[0.12em] leading-none uppercase">
-                  Nova Inc.
+                  {settings.companyName}
                 </p>
                 <p className="font-mono text-white/80 text-[10px] tracking-[0.2em] uppercase mt-[3px]">
-                  Construction
+                  {settings.tagline}
                 </p>
               </div>
             </div>
@@ -155,6 +183,7 @@ const Footer = () => {
               Ready to build something great? Let's talk about your next
               construction project.
             </p>
+
             <a
               href="/#contact"
               className="flex items-center justify-center gap-2 px-6 py-[12px] bg-brand hover:bg-brand-dark text-ink text-[13px] font-bold tracking-wide rounded-xl transition-all duration-200 hover:shadow-[0_0_24px_rgba(126,199,66,0.3)] w-fit"
@@ -180,7 +209,8 @@ const Footer = () => {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-steel-light/70 text-[12px]">
-            © {new Date().getFullYear()} NOVA INC. All rights reserved.
+            © {new Date().getFullYear()} {settings.companyName}. All rights
+            reserved.
           </p>
           <div className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse motion-reduce:animate-none" />

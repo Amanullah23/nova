@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, X, Trash2, Mail, Phone, Calendar, Reply } from "lucide-react";
-import { mockMessages } from "./_data/mock-messages";
+import { createClient } from "@/lib/supabase/client";
 
 const STATUSES = ["unread", "read", "replied"];
 
@@ -19,13 +19,28 @@ const formatDate = (iso) =>
   });
 
 export default function AdminMessagesPage() {
-  // TEMPORARY: local state seeded from mock data — resets on reload.
-  // Replace with Supabase queries (fetch, status update, delete) in the next phase.
-  const [messages, setMessages] = useState(mockMessages);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selected, setSelected] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data, error: dbError } = await supabase
+        .from("messages")
+        .select("*")
+        .order("submitted_date", { ascending: false });
+
+      if (dbError) setError(dbError.message);
+      else setMessages(data);
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const filtered = messages.filter((m) => {
     const matchesSearch =
@@ -35,18 +50,36 @@ export default function AdminMessagesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  const openMessage = (m) => {
+  const openMessage = async (m) => {
     setSelected(m);
-    // Opening a message marks it read, same as any inbox — mirrors expected admin behavior.
     if (m.status === "unread") {
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === m.id ? { ...msg, status: "read" } : msg)),
-      );
-      setSelected({ ...m, status: "read" });
+      const supabase = createClient();
+      const { error: dbError } = await supabase
+        .from("messages")
+        .update({ status: "read" })
+        .eq("id", m.id);
+      if (!dbError) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === m.id ? { ...msg, status: "read" } : msg,
+          ),
+        );
+        setSelected({ ...m, status: "read" });
+      }
     }
   };
 
-  const updateStatus = (id, status) => {
+  const updateStatus = async (id, status) => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("messages")
+      .update({ status })
+      .eq("id", id);
+
+    if (dbError) {
+      setError(dbError.message);
+      return;
+    }
     setMessages((prev) =>
       prev.map((m) => (m.id === id ? { ...m, status } : m)),
     );
@@ -55,9 +88,19 @@ export default function AdminMessagesPage() {
     );
   };
 
-  const confirmDelete = () => {
-    setMessages((prev) => prev.filter((m) => m.id !== pendingDelete.id));
-    if (selected?.id === pendingDelete.id) setSelected(null);
+  const confirmDelete = async () => {
+    const supabase = createClient();
+    const { error: dbError } = await supabase
+      .from("messages")
+      .delete()
+      .eq("id", pendingDelete.id);
+
+    if (dbError) {
+      setError(dbError.message);
+    } else {
+      setMessages((prev) => prev.filter((m) => m.id !== pendingDelete.id));
+      if (selected?.id === pendingDelete.id) setSelected(null);
+    }
     setPendingDelete(null);
   };
 
@@ -73,7 +116,13 @@ export default function AdminMessagesPage() {
         </p>
       </div>
 
-      {/* Filters */}
+      {error && (
+        <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+          <p className="text-red-700 text-[13px] font-medium">{error}</p>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-steel" />
@@ -99,11 +148,16 @@ export default function AdminMessagesPage() {
         </select>
       </div>
 
-      {/* List — inbox-style rows rather than a dense table, since the message preview matters here */}
       <div className="bg-white border border-steel-light rounded-2xl overflow-hidden">
-        {filtered.length === 0 ? (
+        {loading ? (
           <p className="px-5 py-10 text-center text-steel text-[13px]">
-            No messages match your filters.
+            Loading messages...
+          </p>
+        ) : filtered.length === 0 ? (
+          <p className="px-5 py-10 text-center text-steel text-[13px]">
+            {messages.length === 0
+              ? "No messages yet."
+              : "No messages match your filters."}
           </p>
         ) : (
           filtered.map((m) => (
@@ -123,7 +177,7 @@ export default function AdminMessagesPage() {
                     {m.name}
                   </span>
                   <span className="font-mono text-steel/60 text-[11px] shrink-0">
-                    {formatDate(m.submittedDate)}
+                    {formatDate(m.submitted_date)}
                   </span>
                 </div>
                 <p className="text-steel text-[12px] line-clamp-1 mt-0.5">
@@ -140,7 +194,6 @@ export default function AdminMessagesPage() {
         )}
       </div>
 
-      {/* Detail drawer */}
       {selected && (
         <div
           className="fixed inset-0 z-50 flex justify-end"
@@ -180,17 +233,19 @@ export default function AdminMessagesPage() {
                   <Mail className="w-4 h-4 text-brand-dark shrink-0" />
                   <span className="text-[13px]">{selected.email}</span>
                 </a>
-                <a
-                  href={`tel:${selected.phone}`}
-                  className="flex items-center gap-3 text-steel hover:text-ink transition-colors"
-                >
-                  <Phone className="w-4 h-4 text-brand-dark shrink-0" />
-                  <span className="text-[13px]">{selected.phone}</span>
-                </a>
+                {selected.phone && (
+                  <a
+                    href={`tel:${selected.phone}`}
+                    className="flex items-center gap-3 text-steel hover:text-ink transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-brand-dark shrink-0" />
+                    <span className="text-[13px]">{selected.phone}</span>
+                  </a>
+                )}
                 <div className="flex items-center gap-3 text-steel">
                   <Calendar className="w-4 h-4 text-brand-dark shrink-0" />
                   <span className="text-[13px]">
-                    Submitted {formatDate(selected.submittedDate)}
+                    Submitted {formatDate(selected.submitted_date)}
                   </span>
                 </div>
               </div>
@@ -246,7 +301,6 @@ export default function AdminMessagesPage() {
         </div>
       )}
 
-      {/* Delete confirmation modal */}
       {pendingDelete && (
         <div
           className="fixed inset-0 z-[60] bg-ink/40 backdrop-blur-sm flex items-center justify-center px-4"
