@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
@@ -38,39 +39,52 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-surface flex items-center justify-center px-6 relative overflow-hidden">
+    <main className="min-h-screen w-full bg-surface flex items-center justify-center px-6 py-16 relative overflow-x-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.025)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[500px] h-[400px] bg-brand/10 rounded-full blur-[120px] pointer-events-none" />
 
+      {/* Its own fixed corner element — no longer stacked above the centered card fighting its alignment */}
+      <Link
+        href="/"
+        className="fixed top-6 left-6 z-20 flex items-center gap-1.5 text-steel hover:text-ink font-mono text-[11px] font-medium tracking-wide transition-colors"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Back to Website
+      </Link>
+
       <div className="relative z-10 w-full max-w-sm">
-        <div className="flex flex-col items-center gap-3 mb-8">
-          <Image
-            src="/logo-new.png"
-            alt="NOVA INC."
-            width={56}
-            height={56}
-            className="object-contain w-14 h-14"
-          />
-          <div className="text-center">
-            <p className="font-display text-ink font-bold text-[16px] tracking-[0.1em] uppercase">
-              Nova Inc.
-            </p>
-            <p className="font-mono text-brand-dark text-[10px] tracking-[0.25em] uppercase mt-1">
-              Admin Console
+        <div className="bg-white border border-steel-light rounded-3xl p-8 shadow-sm flex flex-col gap-6">
+          <Link href="/" className="flex flex-col items-center gap-3">
+            <Image
+              src="/logo-new.png"
+              alt="NOVA INC."
+              width={52}
+              height={52}
+              className="object-contain w-[52px] h-[52px]"
+            />
+            <div className="text-center">
+              <p className="font-display text-ink font-bold text-[15px] tracking-[0.1em] uppercase">
+                Nova Inc.
+              </p>
+              <p className="font-mono text-brand-dark text-[10px] tracking-[0.25em] uppercase mt-1">
+                Admin Console
+              </p>
+            </div>
+          </Link>
+
+          <div className="h-px bg-steel-light" />
+
+          <div>
+            <h1 className="font-display text-ink font-bold text-xl tracking-tight mb-1">
+              Sign in
+            </h1>
+            <p className="text-steel text-[13px]">
+              Access the NOVA INC. content dashboard.
             </p>
           </div>
-        </div>
-
-        <div className="bg-white border border-steel-light rounded-3xl p-8 shadow-sm">
-          <h1 className="font-display text-ink font-bold text-xl tracking-tight mb-1">
-            Sign in
-          </h1>
-          <p className="text-steel text-[13px] mb-6">
-            Access the NOVA INC. content dashboard.
-          </p>
 
           {error && (
-            <div className="mb-4 flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
               <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
               <p className="text-red-700 text-[13px] font-medium">{error}</p>
             </div>
