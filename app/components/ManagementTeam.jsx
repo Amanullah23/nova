@@ -1,56 +1,40 @@
 "use client";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Linkedin, Twitter } from "lucide-react";
-
-const team = [
-  {
-    name: "Eng. Ahmad Rahimi",
-    role: "Chief Executive Officer",
-    image: "/team2.png",
-    number: "01",
-    bio: "Innovative leader with over a decade of experience in driving organizational growth and strategic development.",
-  },
-  {
-    name: "Fatima Sultani",
-    role: "Operations Manager",
-    image: "/team4.png",
-    number: "02",
-    bio: "Skilled operations specialist focused on improving efficiency, workflow, and customer satisfaction.",
-  },
-  {
-    name: "Mohammad Jawad",
-    role: "Finance Director",
-    image: "/team2.png", // TODO: duplicate of Ahmad Rahimi's photo — needs a distinct image
-    number: "03",
-    bio: "Experienced financial strategist with strong expertise in budgeting, auditing, and financial planning.",
-  },
-  {
-    name: "Sara Noori",
-    role: "Project Manager",
-    image: "/team4.png", // TODO: duplicate of Fatima Sultani's photo — needs a distinct image
-    number: "04",
-    bio: "Results-driven project manager known for delivering projects on time with high quality and coordination.",
-  },
-];
+import { Linkedin, Twitter, User } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const ManagementTeam = () => {
+  const [team, setTeam] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("team_members")
+        .select("*")
+        .eq("status", "published")
+        .order("sort_order", { ascending: true });
+      setTeam(data ?? []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
   return (
     <section
       id="team"
       className="relative w-full py-32 px-6 md:px-12 bg-paper overflow-hidden"
     >
-      {/* Decorative background text */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-[180px] font-bold text-ink/[0.04] select-none pointer-events-none leading-none tracking-tighter whitespace-nowrap z-0">
         TEAM
       </div>
 
-      {/* Decorative rings */}
       <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full border-[40px] border-dashed border-brand/10 pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-80 h-80 rounded-full border-[50px] border-dashed border-ink/[0.04] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Header */}
         <div className="grid lg:grid-cols-2 gap-12 items-end mb-20">
           <div>
             <motion.div
@@ -98,7 +82,7 @@ const ManagementTeam = () => {
             <div className="flex items-center gap-6">
               <div className="flex flex-col">
                 <span className="font-display text-3xl font-bold text-ink">
-                  4
+                  {team.length}
                 </span>
                 <span className="font-mono text-[11px] text-steel uppercase tracking-widest">
                   Leaders
@@ -126,68 +110,94 @@ const ManagementTeam = () => {
           </motion.div>
         </div>
 
-        {/* Team Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {team.map((member, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 0.6,
-                delay: 0.3 + index * 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="group relative bg-white border border-steel-light rounded-3xl overflow-hidden flex flex-col hover:-translate-y-2 transition-transform duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-            >
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-10" />
+        {loading ? (
+          <p className="text-steel text-center py-16">Loading team...</p>
+        ) : team.length === 0 ? (
+          <p className="text-steel text-center py-16">
+            Team information coming soon.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {team.map((member, index) => (
+              <motion.div
+                key={member.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.3 + index * 0.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="group relative bg-white border border-steel-light rounded-3xl overflow-hidden flex flex-col hover:-translate-y-2 transition-transform duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-brand scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-10" />
 
-              {/* Image */}
-              <div className="relative h-[260px] overflow-hidden bg-paper">
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  fill
-                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+                <div className="relative h-[260px] overflow-hidden bg-paper flex items-center justify-center">
+                  {member.image ? (
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <User className="w-14 h-14 text-steel/30" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
 
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-[5px] bg-white/80 backdrop-blur-sm text-steel font-mono text-[11px] font-bold tracking-widest rounded-full border border-steel-light">
-                    {member.number}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex flex-col gap-3 p-6 flex-1">
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-display text-ink font-bold text-[17px] tracking-tight leading-snug group-hover:text-brand-dark transition-colors duration-300">
-                    {member.name}
-                  </h3>
-                  <span className="inline-flex items-center gap-2 w-fit font-mono text-[11px] font-bold text-brand-dark bg-brand/10 border border-brand/20 px-3 py-[4px] rounded-full">
-                    <span className="w-1 h-1 rounded-full bg-brand-dark" />
-                    {member.role}
-                  </span>
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-[5px] bg-white/80 backdrop-blur-sm text-steel font-mono text-[11px] font-bold tracking-widest rounded-full border border-steel-light">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  </div>
                 </div>
 
-                <p className="text-steel text-[13px] leading-relaxed border-t border-steel-light pt-3">
-                  {member.bio}
-                </p>
+                <div className="flex flex-col gap-3 p-6 flex-1">
+                  <div className="flex flex-col gap-1">
+                    <h3 className="font-display text-ink font-bold text-[17px] tracking-tight leading-snug group-hover:text-brand-dark transition-colors duration-300">
+                      {member.name}
+                    </h3>
+                    <span className="inline-flex items-center gap-2 w-fit font-mono text-[11px] font-bold text-brand-dark bg-brand/10 border border-brand/20 px-3 py-[4px] rounded-full">
+                      <span className="w-1 h-1 rounded-full bg-brand-dark" />
+                      {member.role}
+                    </span>
+                  </div>
 
-                <div className="mt-auto pt-3 border-t border-steel-light flex items-center gap-2">
-                  <button className="w-8 h-8 rounded-full bg-paper border border-steel-light flex items-center justify-center text-steel hover:text-brand-dark hover:border-brand/40 hover:bg-brand/10 transition-all duration-200">
-                    <Linkedin className="w-3.5 h-3.5" />
-                  </button>
-                  <button className="w-8 h-8 rounded-full bg-paper border border-steel-light flex items-center justify-center text-steel hover:text-brand-dark hover:border-brand/40 hover:bg-brand/10 transition-all duration-200">
-                    <Twitter className="w-3.5 h-3.5" />
-                  </button>
+                  <p className="text-steel text-[13px] leading-relaxed border-t border-steel-light pt-3">
+                    {member.bio}
+                  </p>
+
+                  {(member.linkedin_url || member.twitter_url) && (
+                    <div className="mt-auto pt-3 border-t border-steel-light flex items-center gap-2">
+                      {member.linkedin_url && (
+                        <a
+                          href={member.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-8 h-8 rounded-full bg-paper border border-steel-light flex items-center justify-center text-steel hover:text-brand-dark hover:border-brand/40 hover:bg-brand/10 transition-all duration-200"
+                          aria-label={`${member.name} on LinkedIn`}
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      {member.twitter_url && (
+                        <a
+                          href={member.twitter_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-8 h-8 rounded-full bg-paper border border-steel-light flex items-center justify-center text-steel hover:text-brand-dark hover:border-brand/40 hover:bg-brand/10 transition-all duration-200"
+                          aria-label={`${member.name} on Twitter`}
+                        >
+                          <Twitter className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

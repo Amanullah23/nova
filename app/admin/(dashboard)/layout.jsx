@@ -8,6 +8,7 @@ import {
   Newspaper,
   Building2,
   Briefcase,
+  Users2,
   Users,
   MessageSquare,
   Menu,
@@ -23,6 +24,7 @@ const navItems = [
   { name: "News", href: "/admin/news", icon: Newspaper },
   { name: "Projects", href: "/admin/projects", icon: Building2 },
   { name: "Job Postings", href: "/admin/jobs", icon: Briefcase },
+  { name: "Team", href: "/admin/team", icon: Users2 },
   { name: "Applications", href: "/admin/applications", icon: Users },
   { name: "Messages", href: "/admin/messages", icon: MessageSquare },
 ];
@@ -129,12 +131,10 @@ export default function AdminDashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-paper flex">
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-[240px] shrink-0 bg-white border-r border-steel-light">
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar */}
       <div
         className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${
           mobileOpen
@@ -155,7 +155,6 @@ export default function AdminDashboardLayout({ children }) {
         </aside>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="lg:hidden flex items-center justify-between px-5 h-[64px] bg-white border-b border-steel-light">
           <div className="flex items-center gap-2">
