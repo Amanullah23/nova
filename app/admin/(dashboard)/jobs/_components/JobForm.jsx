@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { DEPARTMENTS, EMPLOYMENT_TYPES } from "@/lib/constants/jobs";
+import { JOB_DEPARTMENTS, JOB_EMPLOYMENT_TYPES } from "@/lib/constants/jobs";
 import { createClient } from "@/lib/supabase/client";
 
 const slugify = (str) =>
@@ -21,9 +21,9 @@ export default function JobForm({ initialData, mode }) {
       : {
           title: "",
           slug: "",
-          department: DEPARTMENTS[0],
+          department: JOB_DEPARTMENTS[0],
           location: "",
-          type: EMPLOYMENT_TYPES[0],
+          type: JOB_EMPLOYMENT_TYPES[0],
           description: "",
           status: "open",
           expiresAt: "",
@@ -141,7 +141,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, department: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {DEPARTMENTS.map((d) => (
+              {JOB_DEPARTMENTS.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>
@@ -158,7 +158,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, type: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {EMPLOYMENT_TYPES.map((t) => (
+              {JOB_EMPLOYMENT_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {t}
                 </option>
