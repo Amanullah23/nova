@@ -5,12 +5,18 @@ import { Save, ArrowLeft, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { PROJECT_CATEGORIES } from "@/lib/constants/projects";
 import { createClient } from "@/lib/supabase/client";
+import { getYouTubeId } from "@/lib/utils/youtube";
 
 export default function ProjectForm({ initialData, mode }) {
   const router = useRouter();
   const [form, setForm] = useState(
     initialData
-      ? { ...initialData, image: initialData.image ?? "" }
+      ? {
+          ...initialData,
+          image: initialData.image ?? "",
+          galleryImages: initialData.gallery_images ?? [],
+          youtubeUrl: initialData.youtube_url ?? "",
+        }
       : {
           title: "",
           location: "",
@@ -20,12 +26,16 @@ export default function ProjectForm({ initialData, mode }) {
           description: "",
           status: "draft",
           featured: false,
+          galleryImages: [],
+          youtubeUrl: "",
         },
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [galleryUploadError, setGalleryUploadError] = useState("");
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -60,7 +70,65 @@ export default function ProjectForm({ initialData, mode }) {
     const { data } = supabase.storage.from("media").getPublicUrl(filePath);
     setForm((prev) => ({ ...prev, image: data.publicUrl }));
     setUploading(false);
-    e.target.value = ""; // allows re-selecting the same file later if needed
+    e.target.value = "";
+  };
+
+  const handleGalleryUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setGalleryUploadError("");
+    setUploadingGallery(true);
+
+    const supabase = createClient();
+    const uploadedUrls = [];
+    const failures = [];
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        failures.push(`${file.name}: not an image file`);
+        continue;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        failures.push(`${file.name}: over 5MB`);
+        continue;
+      }
+
+      const ext = file.name.split(".").pop();
+      const filePath = `projects/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("media")
+        .upload(filePath, file, { cacheControl: "3600", upsert: false });
+
+      if (uploadErr) {
+        failures.push(`${file.name}: ${uploadErr.message}`);
+        continue;
+      }
+
+      const { data } = supabase.storage.from("media").getPublicUrl(filePath);
+      uploadedUrls.push(data.publicUrl);
+    }
+
+    if (uploadedUrls.length > 0) {
+      setForm((prev) => ({
+        ...prev,
+        galleryImages: [...prev.galleryImages, ...uploadedUrls],
+      }));
+    }
+    if (failures.length > 0) {
+      setGalleryUploadError(failures.join(" · "));
+    }
+
+    setUploadingGallery(false);
+    e.target.value = "";
+  };
+
+  const removeGalleryImage = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -78,6 +146,8 @@ export default function ProjectForm({ initialData, mode }) {
       description: form.description,
       status: form.status,
       featured: form.featured,
+      gallery_images: form.galleryImages,
+      youtube_url: form.youtubeUrl || null,
     };
 
     const { error: dbError } =
@@ -97,6 +167,8 @@ export default function ProjectForm({ initialData, mode }) {
     router.push("/admin/projects");
     router.refresh();
   };
+
+  const previewVideoId = getYouTubeId(form.youtubeUrl);
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl flex flex-col gap-6">
@@ -200,10 +272,10 @@ export default function ProjectForm({ initialData, mode }) {
           </div>
         </div>
 
-        {/* Image — upload or paste a URL */}
+        {/* Cover image */}
         <div className="flex flex-col gap-1">
           <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
-            Project Image
+            Cover Image
           </label>
 
           {form.image && (
@@ -225,7 +297,7 @@ export default function ProjectForm({ initialData, mode }) {
           )}
 
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 px-4 py-[10px] bg-paper border border-steel-light rounded-xl text-steel hover:text-ink hover:border-brand/40 text-[13px] font-semibold cursor-pointer transition-colors">
+            <label className="flex items-center gap-2 px-4 py-[10px] bg-paper border border-steel-light rounded-xl text-steel hover:text-ink hover:border-brand/40 text-[13px] font-semibold cursor-pointer transition-colors w-fit">
               <Upload className="w-4 h-4" />
               {uploading ? "Uploading..." : "Upload from your computer"}
               <input
@@ -254,6 +326,94 @@ export default function ProjectForm({ initialData, mode }) {
               className="w-full mt-2 px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink font-mono text-[13px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             />
           </details>
+        </div>
+
+        {/* Gallery images */}
+        <div className="flex flex-col gap-1">
+          <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
+            Additional Images (Gallery)
+          </label>
+
+          {form.galleryImages.length > 0 && (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-1">
+              {form.galleryImages.map((url, index) => (
+                <div
+                  key={url + index}
+                  className="relative aspect-square rounded-lg overflow-hidden border border-steel-light bg-paper"
+                >
+                  <img
+                    src={url}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(index)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-ink/70 backdrop-blur-sm text-white flex items-center justify-center hover:bg-ink transition-colors"
+                    aria-label={`Remove gallery image ${index + 1}`}
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <label className="flex items-center gap-2 px-4 py-[10px] bg-paper border border-steel-light rounded-xl text-steel hover:text-ink hover:border-brand/40 text-[13px] font-semibold cursor-pointer transition-colors w-fit">
+            <Upload className="w-4 h-4" />
+            {uploadingGallery ? "Uploading..." : "Add photos"}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleGalleryUpload}
+              disabled={uploadingGallery}
+              className="hidden"
+            />
+          </label>
+
+          {galleryUploadError && (
+            <p className="text-red-600 text-[12px]">{galleryUploadError}</p>
+          )}
+          <p className="text-steel/60 text-[11px] mt-0.5">
+            Shown alongside the cover image in the project detail view on the
+            public site. Select multiple photos at once, or add them one at a
+            time.
+          </p>
+        </div>
+
+        {/* YouTube video */}
+        <div className="flex flex-col gap-1">
+          <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
+            YouTube Video Link
+          </label>
+          <input
+            type="url"
+            value={form.youtubeUrl}
+            onChange={(e) => setForm({ ...form, youtubeUrl: e.target.value })}
+            placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+            className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink font-mono text-[13px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
+          />
+          {form.youtubeUrl &&
+            (previewVideoId ? (
+              <div className="relative w-full max-w-xs aspect-video rounded-xl overflow-hidden bg-ink mt-1">
+                <iframe
+                  src={`https://www.youtube.com/embed/${previewVideoId}`}
+                  title="Video preview"
+                  className="absolute inset-0 w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <p className="text-red-600 text-[12px] mt-0.5">
+                Doesn't look like a valid YouTube link — check the URL.
+              </p>
+            ))}
+          <p className="text-steel/60 text-[11px] mt-0.5">
+            Optional — paste any YouTube video link. It plays as an embedded
+            video on the project's detail view.
+          </p>
         </div>
 
         <div className="flex flex-col gap-1">

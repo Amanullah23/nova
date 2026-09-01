@@ -1,13 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, X, ArrowUpRight } from "lucide-react";
+import {
+  MapPin,
+  X,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getYouTubeId } from "@/lib/utils/youtube";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   useEffect(() => {
     const load = async () => {
@@ -22,6 +30,10 @@ export default function Projects() {
     };
     load();
   }, []);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedProject?.id]);
 
   if (loading) {
     return (
@@ -41,6 +53,15 @@ export default function Projects() {
 
   const featured = projects.find((p) => p.featured) ?? projects[0];
   const rest = projects.filter((p) => p.id !== featured.id);
+
+  const modalImages = selectedProject
+    ? [selectedProject.image, ...(selectedProject.gallery_images || [])].filter(
+        Boolean,
+      )
+    : [];
+  const modalVideoId = selectedProject
+    ? getYouTubeId(selectedProject.youtube_url)
+    : null;
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -203,7 +224,7 @@ export default function Projects() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-ink/60 backdrop-blur-md flex items-center justify-center z-50 px-4"
+            className="fixed inset-0 bg-ink/60 backdrop-blur-md flex items-center justify-center z-50 px-4 py-8"
             onClick={() => setSelectedProject(null)}
           >
             <motion.div
@@ -212,23 +233,69 @@ export default function Projects() {
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white border border-steel-light rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl"
+              className="relative bg-white border border-steel-light rounded-3xl overflow-hidden max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             >
               <div className="h-[3px] bg-gradient-to-r from-brand via-brand/60 to-transparent" />
+
+              {/* Image carousel */}
               <div className="relative h-[240px] overflow-hidden">
-                {selectedProject.image && (
+                {modalImages.length > 0 && (
                   <img
-                    src={selectedProject.image}
+                    src={modalImages[activeImageIndex]}
                     alt={selectedProject.title}
                     className="w-full h-full object-cover"
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+
                 <div className="absolute top-4 left-4">
                   <span className="px-3 py-[5px] bg-brand text-ink font-mono text-[10px] font-bold tracking-widest uppercase rounded-full">
                     {selectedProject.category}
                   </span>
                 </div>
+
+                {modalImages.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveImageIndex(
+                          (i) =>
+                            (i - 1 + modalImages.length) % modalImages.length,
+                        )
+                      }
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink hover:bg-white transition-colors"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveImageIndex((i) => (i + 1) % modalImages.length)
+                      }
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-ink hover:bg-white transition-colors"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                      {modalImages.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setActiveImageIndex(i)}
+                          className={`h-1.5 rounded-full transition-all ${
+                            i === activeImageIndex
+                              ? "bg-white w-4"
+                              : "bg-white/60 w-1.5"
+                          }`}
+                          aria-label={`Go to image ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="p-7 flex flex-col gap-4">
@@ -246,10 +313,29 @@ export default function Projects() {
                     {selectedProject.year}
                   </span>
                 </div>
+
                 <p className="text-steel text-[14px] leading-relaxed border-t border-steel-light pt-4">
                   {selectedProject.description}
                 </p>
               </div>
+
+              {/* Video, only if a valid YouTube link is set */}
+              {modalVideoId && (
+                <div className="px-7 pb-7">
+                  <p className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase mb-2">
+                    Project Video
+                  </p>
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-ink">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${modalVideoId}`}
+                      title={`${selectedProject.title} video`}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
 
               <button
                 onClick={() => setSelectedProject(null)}

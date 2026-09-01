@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Search, Pencil, Trash2, Star, MapPin } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Star, MapPin, Play } from "lucide-react";
 import { PROJECT_CATEGORIES } from "@/lib/constants/projects";
 import { createClient } from "@/lib/supabase/client";
 
@@ -154,6 +154,20 @@ export default function AdminProjectsPage() {
                 >
                   {p.status}
                 </span>
+                {(p.gallery_images?.length > 0 || p.youtube_url) && (
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+                    {p.gallery_images?.length > 0 && (
+                      <span className="px-2 py-[3px] bg-ink/70 backdrop-blur-sm text-white font-mono text-[10px] font-bold rounded-full">
+                        +{p.gallery_images.length}
+                      </span>
+                    )}
+                    {p.youtube_url && (
+                      <span className="w-6 h-6 rounded-full bg-ink/70 backdrop-blur-sm text-white flex items-center justify-center">
+                        <Play className="w-3 h-3 fill-white" />
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="p-5 flex flex-col gap-2">
