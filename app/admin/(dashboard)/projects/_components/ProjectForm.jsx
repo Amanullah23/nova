@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { PROJECT_CATEGORIES } from "@/lib/constants/projects";
 import { createClient } from "@/lib/supabase/client";
@@ -9,19 +9,59 @@ import { createClient } from "@/lib/supabase/client";
 export default function ProjectForm({ initialData, mode }) {
   const router = useRouter();
   const [form, setForm] = useState(
-    initialData ?? {
-      title: "",
-      location: "",
-      image: "",
-      category: PROJECT_CATEGORIES[0],
-      year: new Date().getFullYear().toString(),
-      description: "",
-      status: "draft",
-      featured: false,
-    },
+    initialData
+      ? { ...initialData, image: initialData.image ?? "" }
+      : {
+          title: "",
+          location: "",
+          image: "",
+          category: PROJECT_CATEGORIES[0],
+          year: new Date().getFullYear().toString(),
+          description: "",
+          status: "draft",
+          featured: false,
+        },
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image must be under 5MB.");
+      return;
+    }
+
+    setUploadError("");
+    setUploading(true);
+
+    const supabase = createClient();
+    const ext = file.name.split(".").pop();
+    const filePath = `projects/${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadErr } = await supabase.storage
+      .from("media")
+      .upload(filePath, file, { cacheControl: "3600", upsert: false });
+
+    if (uploadErr) {
+      setUploadError(uploadErr.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("media").getPublicUrl(filePath);
+    setForm((prev) => ({ ...prev, image: data.publicUrl }));
+    setUploading(false);
+    e.target.value = ""; // allows re-selecting the same file later if needed
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,21 +200,60 @@ export default function ProjectForm({ initialData, mode }) {
           </div>
         </div>
 
+        {/* Image — upload or paste a URL */}
         <div className="flex flex-col gap-1">
           <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
-            Image Path
+            Project Image
           </label>
-          <input
-            type="text"
-            value={form.image}
-            onChange={(e) => setForm({ ...form, image: e.target.value })}
-            placeholder="/projects/my-project.jpg"
-            className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink font-mono text-[13px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
-          />
-          <p className="text-steel/60 text-[11px] mt-0.5">
-            Path relative to /public — image upload isn't wired up yet, this
-            expects a file already in the project.
-          </p>
+
+          {form.image && (
+            <div className="relative w-full h-[160px] rounded-xl overflow-hidden border border-steel-light bg-paper mb-1">
+              <img
+                src={form.image}
+                alt="Project preview"
+                className="w-full h-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, image: "" })}
+                className="absolute top-2 right-2 w-7 h-7 rounded-full bg-ink/70 backdrop-blur-sm text-white flex items-center justify-center hover:bg-ink transition-colors"
+                aria-label="Remove image"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 px-4 py-[10px] bg-paper border border-steel-light rounded-xl text-steel hover:text-ink hover:border-brand/40 text-[13px] font-semibold cursor-pointer transition-colors">
+              <Upload className="w-4 h-4" />
+              {uploading ? "Uploading..." : "Upload from your computer"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {uploadError && (
+            <p className="text-red-600 text-[12px]">{uploadError}</p>
+          )}
+
+          <details className="mt-1">
+            <summary className="text-steel/60 text-[11px] cursor-pointer hover:text-steel">
+              Or paste an image URL manually
+            </summary>
+            <input
+              type="text"
+              value={form.image}
+              onChange={(e) => setForm({ ...form, image: e.target.value })}
+              placeholder="/projects/my-project.jpg or a full https:// URL"
+              className="w-full mt-2 px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink font-mono text-[13px] placeholder-steel/60 focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
+            />
+          </details>
         </div>
 
         <div className="flex flex-col gap-1">

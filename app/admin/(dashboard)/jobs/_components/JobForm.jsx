@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { JOB_DEPARTMENTS, JOB_EMPLOYMENT_TYPES } from "@/lib/constants/jobs";
+import { DEPARTMENTS, EMPLOYMENT_TYPES } from "@/lib/constants/jobs";
 import { createClient } from "@/lib/supabase/client";
 
 const slugify = (str) =>
@@ -16,15 +16,18 @@ const slugify = (str) =>
 export default function JobForm({ initialData, mode }) {
   const router = useRouter();
   const [form, setForm] = useState(
-    initialData ?? {
-      title: "",
-      slug: "",
-      department: JOB_DEPARTMENTS[0],
-      location: "",
-      type: JOB_EMPLOYMENT_TYPES[0],
-      description: "",
-      status: "open",
-    },
+    initialData
+      ? { ...initialData, expiresAt: initialData.expires_at ?? "" }
+      : {
+          title: "",
+          slug: "",
+          department: DEPARTMENTS[0],
+          location: "",
+          type: EMPLOYMENT_TYPES[0],
+          description: "",
+          status: "open",
+          expiresAt: "",
+        },
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -52,6 +55,7 @@ export default function JobForm({ initialData, mode }) {
       type: form.type,
       description: form.description,
       status: form.status,
+      expires_at: form.expiresAt || null,
     };
 
     const { error: dbError } =
@@ -137,7 +141,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, department: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {JOB_DEPARTMENTS.map((d) => (
+              {DEPARTMENTS.map((d) => (
                 <option key={d} value={d}>
                   {d}
                 </option>
@@ -154,7 +158,7 @@ export default function JobForm({ initialData, mode }) {
               onChange={(e) => setForm({ ...form, type: e.target.value })}
               className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
             >
-              {JOB_EMPLOYMENT_TYPES.map((t) => (
+              {EMPLOYMENT_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {t}
                 </option>
@@ -191,6 +195,23 @@ export default function JobForm({ initialData, mode }) {
               <option value="closed">Closed</option>
             </select>
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="font-mono text-[11px] font-bold text-steel tracking-[0.15em] uppercase">
+            Expiration Date
+          </label>
+          <input
+            type="date"
+            value={form.expiresAt}
+            onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
+            className="w-full px-4 py-3 bg-paper border border-steel-light rounded-xl text-ink text-[14px] focus:outline-none focus:border-brand focus:bg-white transition-all duration-200"
+          />
+          <p className="text-steel/60 text-[11px] mt-0.5">
+            Optional — leave blank for an ongoing posting. Past this date, the
+            listing is automatically hidden from the public Careers page (status
+            here stays unchanged, so you can still see and edit it).
+          </p>
         </div>
 
         <div className="flex flex-col gap-1">

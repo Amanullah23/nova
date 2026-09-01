@@ -57,10 +57,12 @@ export default function CareersPage() {
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
+      const todayISO = new Date().toISOString().slice(0, 10);
       const { data } = await supabase
         .from("jobs")
         .select("*")
         .eq("status", "open")
+        .or(`expires_at.is.null,expires_at.gte.${todayISO}`)
         .order("posted_date", { ascending: false });
       setOpenPositions(data ?? []);
       setLoadingJobs(false);
@@ -80,8 +82,6 @@ export default function CareersPage() {
     e.preventDefault();
     setStatus("loading");
 
-    // Same reasoning as Contact.jsx: generate the id client-side since
-    // applications' SELECT policy is authenticated-only.
     const id = crypto.randomUUID();
     const supabase = createClient();
     const { error: dbError } = await supabase.from("applications").insert({

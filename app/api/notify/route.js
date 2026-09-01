@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const TABLE_BY_TYPE = { application: "applications", message: "messages" };
 const TOGGLE_COLUMN_BY_TYPE = {
   application: "notify_new_application",
@@ -19,6 +17,15 @@ const escapeHtml = (str = "") =>
 
 export async function POST(request) {
   try {
+    if (!process.env.RESEND_API_KEY) {
+      // Fails this one request, not the whole build — a missing key here
+      // must never be able to break deployment of the entire site again.
+      return NextResponse.json(
+        { error: "Email service not configured (missing RESEND_API_KEY)" },
+        { status: 500 },
+      );
+    }
+
     const { type, id } = await request.json();
 
     if (!TABLE_BY_TYPE[type] || !id) {
@@ -38,13 +45,9 @@ export async function POST(request) {
       !settings[TOGGLE_COLUMN_BY_TYPE[type]] ||
       !settings.email
     ) {
-      // Notifications off, or no notification email configured — not an error, just nothing to do.
       return NextResponse.json({ skipped: true });
     }
 
-    // Re-fetch the real row by id via the service role — never trust
-    // client-supplied name/email/message content for the email body,
-    // only the id, so a spoofed POST can't fabricate a fake notification.
     const { data: row, error: rowError } = await supabase
       .from(TABLE_BY_TYPE[type])
       .select("*")
@@ -83,6 +86,7 @@ export async function POST(request) {
            <p><strong>Message:</strong><br/>${escapeHtml(row.message).replace(/\n/g, "<br/>")}</p>
            <p><a href="${siteUrl}${adminPath}">View in Admin Panel</a></p>`;
 
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { error: sendError } = await resend.emails.send({
       from:
         process.env.NOTIFY_FROM_EMAIL || "NOVA INC. <onboarding@resend.dev>",

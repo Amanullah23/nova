@@ -12,6 +12,9 @@ const formatDate = (iso) =>
     year: "numeric",
   });
 
+const todayISO = new Date().toISOString().slice(0, 10);
+const isExpired = (job) => Boolean(job.expires_at) && job.expires_at < todayISO;
+
 export default function AdminJobsPage() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +68,8 @@ export default function AdminJobsPage() {
           </h1>
           <p className="text-steel text-[13px] mt-1">
             {jobs.length} total ·{" "}
-            {jobs.filter((j) => j.status === "open").length} open
+            {jobs.filter((j) => j.status === "open" && !isExpired(j)).length}{" "}
+            open
           </p>
         </div>
         <Link
@@ -120,7 +124,7 @@ export default function AdminJobsPage() {
 
       <div className="bg-white border border-steel-light rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[760px]">
+          <table className="w-full text-left border-collapse min-w-[860px]">
             <thead>
               <tr className="border-b border-steel-light bg-paper">
                 <th className="px-5 py-3 font-mono text-[11px] font-bold text-steel tracking-widest uppercase">
@@ -136,6 +140,9 @@ export default function AdminJobsPage() {
                   Posted
                 </th>
                 <th className="px-5 py-3 font-mono text-[11px] font-bold text-steel tracking-widest uppercase">
+                  Expires
+                </th>
+                <th className="px-5 py-3 font-mono text-[11px] font-bold text-steel tracking-widest uppercase">
                   Status
                 </th>
                 <th className="px-5 py-3 font-mono text-[11px] font-bold text-steel tracking-widest uppercase text-right">
@@ -147,7 +154,7 @@ export default function AdminJobsPage() {
               {loading ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-5 py-10 text-center text-steel text-[13px]"
                   >
                     Loading job postings...
@@ -156,7 +163,7 @@ export default function AdminJobsPage() {
               ) : filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-5 py-10 text-center text-steel text-[13px]"
                   >
                     {jobs.length === 0
@@ -165,63 +172,73 @@ export default function AdminJobsPage() {
                   </td>
                 </tr>
               ) : (
-                filtered.map((j) => (
-                  <tr
-                    key={j.id}
-                    className="border-b border-steel-light last:border-b-0 hover:bg-paper/60 transition-colors"
-                  >
-                    <td className="px-5 py-4">
-                      <div className="flex flex-col">
-                        <span className="text-ink text-[13px] font-semibold leading-snug">
-                          {j.title}
+                filtered.map((j) => {
+                  const expired = isExpired(j);
+                  return (
+                    <tr
+                      key={j.id}
+                      className="border-b border-steel-light last:border-b-0 hover:bg-paper/60 transition-colors"
+                    >
+                      <td className="px-5 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-ink text-[13px] font-semibold leading-snug">
+                            {j.title}
+                          </span>
+                          <span className="font-mono text-steel/60 text-[11px]">
+                            {j.type}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full bg-brand/10 text-brand-dark whitespace-nowrap">
+                          {j.department}
                         </span>
-                        <span className="font-mono text-steel/60 text-[11px]">
-                          {j.type}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className="font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full bg-brand/10 text-brand-dark whitespace-nowrap">
-                        {j.department}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4 text-steel text-[13px] whitespace-nowrap">
-                      {j.location}
-                    </td>
-                    <td className="px-5 py-4 font-mono text-steel text-[12px] whitespace-nowrap">
-                      {formatDate(j.posted_date)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span
-                        className={`font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full whitespace-nowrap ${
-                          j.status === "open"
-                            ? "bg-brand/15 text-brand-dark"
-                            : "bg-steel-light text-steel"
-                        }`}
-                      >
-                        {j.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          href={`/admin/jobs/${j.id}`}
-                          className="p-2 rounded-lg text-steel hover:text-brand-dark hover:bg-brand/10 transition-colors"
-                          aria-label={`Edit ${j.title}`}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Link>
-                        <button
-                          onClick={() => setPendingDelete(j)}
-                          className="p-2 rounded-lg text-steel hover:text-red-600 hover:bg-red-50 transition-colors"
-                          aria-label={`Delete ${j.title}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td className="px-5 py-4 text-steel text-[13px] whitespace-nowrap">
+                        {j.location}
+                      </td>
+                      <td className="px-5 py-4 font-mono text-steel text-[12px] whitespace-nowrap">
+                        {formatDate(j.posted_date)}
+                      </td>
+                      <td className="px-5 py-4 font-mono text-steel text-[12px] whitespace-nowrap">
+                        {j.expires_at ? formatDate(j.expires_at) : "—"}
+                      </td>
+                      <td className="px-5 py-4">
+                        {j.status === "closed" ? (
+                          <span className="font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full whitespace-nowrap bg-steel-light text-steel">
+                            closed
+                          </span>
+                        ) : expired ? (
+                          <span className="font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full whitespace-nowrap bg-red-50 text-red-700">
+                            expired
+                          </span>
+                        ) : (
+                          <span className="font-mono text-[11px] font-bold tracking-widest uppercase px-2.5 py-[3px] rounded-full whitespace-nowrap bg-brand/15 text-brand-dark">
+                            open
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <Link
+                            href={`/admin/jobs/${j.id}`}
+                            className="p-2 rounded-lg text-steel hover:text-brand-dark hover:bg-brand/10 transition-colors"
+                            aria-label={`Edit ${j.title}`}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => setPendingDelete(j)}
+                            className="p-2 rounded-lg text-steel hover:text-red-600 hover:bg-red-50 transition-colors"
+                            aria-label={`Delete ${j.title}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

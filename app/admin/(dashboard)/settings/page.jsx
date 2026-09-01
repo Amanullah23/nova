@@ -227,6 +227,7 @@ export default function AdminSettingsPage() {
             </label>
             <input
               type="text"
+              autoComplete="off"
               value={siteInfo.phone}
               onChange={(e) =>
                 setSiteInfo({ ...siteInfo, phone: e.target.value })
