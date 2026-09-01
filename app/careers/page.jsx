@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import {
   MapPin,
   Clock,
+  CalendarClock,
   ArrowUpRight,
   Send,
   HandCoins,
@@ -39,6 +40,12 @@ const benefits = [
     description: "Small, accountable teams — not lost in a large bureaucracy.",
   },
 ];
+
+const formatExpiryDate = (iso) =>
+  new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
 
 export default function CareersPage() {
   const formRef = useRef(null);
@@ -265,6 +272,12 @@ export default function CareersPage() {
                         <Clock className="w-3.5 h-3.5" />
                         {pos.type}
                       </span>
+                      {pos.expires_at && (
+                        <span className="flex items-center gap-1.5 text-brand-dark">
+                          <CalendarClock className="w-3.5 h-3.5" />
+                          Closes {formatExpiryDate(pos.expires_at)}
+                        </span>
+                      )}
                     </div>
                     <p className="text-steel text-[13px] leading-relaxed mt-1 max-w-xl">
                       {pos.description}
