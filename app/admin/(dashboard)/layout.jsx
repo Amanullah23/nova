@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Newspaper,
+  MessageCircle,
   Building2,
   Layers,
   Briefcase,
@@ -23,6 +24,7 @@ import { createClient } from "@/lib/supabase/client";
 const navItems = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
   { name: "News", href: "/admin/news", icon: Newspaper },
+  { name: "Comments", href: "/admin/comments", icon: MessageCircle },
   { name: "Projects", href: "/admin/projects", icon: Building2 },
   { name: "Business Overview", href: "/admin/overview", icon: Layers },
   { name: "Job Postings", href: "/admin/jobs", icon: Briefcase },

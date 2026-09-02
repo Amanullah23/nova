@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Calendar } from "lucide-react";
@@ -15,6 +16,7 @@ const formatDate = (iso) =>
   });
 
 export default function NewsClient({ articles }) {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filtered =
@@ -64,7 +66,8 @@ export default function NewsClient({ articles }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="group relative rounded-3xl overflow-hidden bg-white border border-steel-light shadow-sm flex flex-col lg:flex-row"
+              onClick={() => router.push(`/news/${featured.slug}`)}
+              className="group relative rounded-3xl overflow-hidden bg-white border border-steel-light shadow-sm flex flex-col lg:flex-row cursor-pointer"
             >
               <div className="relative w-full lg:w-[52%] h-[260px] lg:h-[440px] overflow-hidden shrink-0">
                 {featured.image && (
@@ -114,7 +117,8 @@ export default function NewsClient({ articles }) {
                     delay: index * 0.08,
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  className="group relative rounded-3xl overflow-hidden bg-white border border-steel-light shadow-sm flex flex-col"
+                  onClick={() => router.push(`/news/${article.slug}`)}
+                  className="group relative rounded-3xl overflow-hidden bg-white border border-steel-light shadow-sm flex flex-col cursor-pointer"
                 >
                   <div className="relative w-full h-[190px] overflow-hidden">
                     {article.image && (
