@@ -3,7 +3,7 @@ import ArticleForm from "../_components/ArticleForm";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EditArticlePage({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const supabase = await createClient();
   const { data: article } = await supabase
     .from("articles")

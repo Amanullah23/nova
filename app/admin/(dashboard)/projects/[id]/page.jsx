@@ -3,7 +3,7 @@ import ProjectForm from "../_components/ProjectForm";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EditProjectPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const supabase = await createClient();
   const { data: project } = await supabase
     .from("projects")

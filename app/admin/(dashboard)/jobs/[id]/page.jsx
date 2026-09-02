@@ -3,7 +3,7 @@ import JobForm from "../_components/JobForm";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function EditJobPage({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const supabase = await createClient();
   const { data: job } = await supabase
     .from("jobs")

@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Newspaper,
   Building2,
+  Layers,
   Briefcase,
   Users2,
   Users,
@@ -23,6 +24,7 @@ const navItems = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
   { name: "News", href: "/admin/news", icon: Newspaper },
   { name: "Projects", href: "/admin/projects", icon: Building2 },
+  { name: "Business Overview", href: "/admin/overview", icon: Layers },
   { name: "Job Postings", href: "/admin/jobs", icon: Briefcase },
   { name: "Team", href: "/admin/team", icon: Users2 },
   { name: "Applications", href: "/admin/applications", icon: Users },
@@ -69,7 +71,7 @@ export default function AdminDashboardLayout({ children }) {
         </div>
       </div>
 
-      <nav className="flex-1 px-3 flex flex-col gap-1">
+      <nav className="flex-1 px-3 flex flex-col gap-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
